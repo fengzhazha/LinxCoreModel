@@ -1,0 +1,7 @@
+[Trace]
+
+enableLimitOutput = false
+cycleLowerThreshold = 0
+cycleUpperThreshold = 500000
+countEventPrintInterval = 100
+sysClockTicks = 1800000

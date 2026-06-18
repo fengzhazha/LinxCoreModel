@@ -1,0 +1,14 @@
+#ifndef BLOCKISA_MODEL_INTERFACE_TILEREGTTRANSLDRES_H
+#define BLOCKISA_MODEL_INTERFACE_TILEREGTTRANSLDRES_H
+
+#include "interface/TileRegVecLdRes.h"
+
+namespace JCore {
+
+// TILEREG_TTRANS_LD_RSP
+typedef TileRegVecLdRes TileRegTTransLdRes;
+
+
+} // namespace JCore
+
+#endif  // BLOCKISA_MODEL_INTERFACE_TILEREGTTRANSLDRES_H

@@ -1,0 +1,59 @@
+[VectorCore]
+
+vector_core_thread_num = 4                      # number of vector core thread
+
+vector_core_load_request_queue_size = 200000         # The size of the load request Queue
+vector_core_store_request_queue_size = 100000        # The size of the store request Queue
+
+vector_core_lm_work_req_num = 1                 # The vcore LM can handle the number of BCCVecReq.
+
+vector_core_grob_distribute_num = 1
+vector_core_grob_depth = 4
+
+enable_tile_cache = true
+enable_scb = true
+stash_mode = false                                   #cube tranfer data to tile cache
+stash_to_enable = false                              #stash support TO Cache
+ta_cache_set = 256                                  # Number of ta set
+ta_cache_way = 16                                   # Number of ta way
+ta_cache_size = 256                                 # Bytes of each ta buffer entry
+to_cache_set = 256                                  # Number of ta set
+to_cache_way = 16                                    # Number of ta way
+to_cache_size = 256                                 # Bytes of each ta buffer entry
+
+blockCmdBufferSize = 4                              # Maximum number of blockCmd received
+ta_set = 8                                         # Number of ta set
+ta_way = 16                                          # Number of ta way
+ta_waysize = 256                                    # Bytes of each ta buffer entry
+ta_ldq_size = 48                                    # load queue size
+ta_stq_size = 16                                    # store queue size
+ta_tile_ld_band = 2                                 # sent to tile load band limit
+ta_tile_st_band = 1                                 # sent to tile store band limit
+ta_scb_entry_size = 32
+ta_store_retire_band = 8                            # sent to scb band limit
+ldq_deallocate_by_nonflush = false                  # tile ldq deallocate according prob non-flush
+
+loadCountPerCycle = 64                              # handle num of ld memreq per one cycle
+storeCountPerCycle = 64                             # handle num of st memreq per one cycle
+fetch_blocks_width = 1                              # Fetch block per cycle
+
+perfect_load_enable = false                         # Eliminate the impact of ring && tilereg aaccelss
+perfect_store_enable = false                        # Eliminate the impact of ring && tilereg aaccelss
+VAB_EN = false                                      # gather||scatter enable
+ld_pipe_cnt = 2                                     # Vec-Tile LSU load pipe cnt
+
+scb_evict_mode = 1                                  # 0: evict one entry each cycle; 1: evict oldest when full
+
+dynamic_stash_mode = true
+hpfQueueMaxSize = 64                                 # head prefetch buffer 16*8B=128B
+pfQueueMaxSize = 64                                  # load prefetch buffer 16*8B=128B
+pfPendingMaxSize = 64                               # prefetch pending max size 64*8B=512B
+prefetch_pending_en = true                          # load prefetch outstanding en
+prefetch_stride = 8                                 # load prefetch stride
+prefetch_size = 1                                   # load prefetch size
+head_prefetch_en = true                            # head prefetch gate
+head_prefetch_stride = 0                            # head prefetch stride
+head_prefetch_size = 8                              # head prefetch size
+TileCacheReplacementPolicies = 0
+
+load_to_use_enable = true                           # Wake up subsequence instruction if ld hit at E2

@@ -1,0 +1,35 @@
+[SoftCore]
+multiThreadNum = 1
+execWidth = 1
+scalarMaxIndexDistance = 4
+scalarMaxOutputNum = 2
+laneNum = 64
+vectorMaxIndexDistance = 4
+vectorMaxOutputNum = 1
+tileRegMaxRelativeIndex = 16 # Maximum relative index distance for tileReg, 16(Input) + 4(Output)
+tileRegMaxOutputNum = 8 # Maximum output for tileReg, 8(Input) + 8(Output)
+tileRegMaxInputNum = 8
+minTileSize = 256        # Minimum tile size
+maxTileSize = 262144     # Maximum tile size 256 * 1024 = 262144 Bytes
+
+output_name = "./soft_out.trace"
+meta_processor_num = 1              # The number of meta processor
+meta_processor_threads_num = 1      # The number of threads number per meta processor
+ai_core_num = 32
+
+atomic_ld_latency = 200              # The latency of atomic load.add instruction
+ld_latency = 4                      # The latency of scalar load instruction
+
+gqm_sort_enable = false
+gqm_wr_latency = 200                  # The latency of GQM write/read
+
+lsu_depth = 128
+atomic_lsu_depth = 128
+gqm_wru_depth = 128
+asynchronous_inst_exe = true
+
+sampling_period = 1000
+
+start_smt_pc = 0x1cbe6
+ld_node_pc = 0x1cd00
+soft_pipe = false

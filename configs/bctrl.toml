@@ -1,0 +1,66 @@
+[BCtrl]
+
+bdisp_policy = "RR"             #Dispatch policy
+
+brnu_fifo_depth = 4
+brnu_rename_width = 8           #Number of get/set that can be renamed per block per cycle
+brnu_rename_get_width = 32      #Number of get that can be renamed per block per cycle
+brnu_rename_set_width = 32      #Number of set that can be renamed per block per cycle
+max_get_per_pe = 32             #Number of Maximum GETs per PE
+max_set_per_pe = 64             #Number of Maximum SETs per PE
+
+bissq_policy = "BYPASS"         #Issue a block immediately
+bissq_depth = 32                #Block issue queue depth per pe
+
+bifu_bheader_fifo_depth = 64
+
+get_prft = 1024                 #Number of max get entries
+set_prft = 512                  #Number of max set entries
+bctrl_bandwidth = 4            #BCtrl bandwidth
+block_dispatch_mode = 1         #0:RR MODE 1:Workload mode 2:TPC Continue
+block_dispatch_gap = 40         #Percentage of Block dispatch gap between two PEs
+block_rename_backpres_thres = 80      #Block Rename Physcial Tag Back pressure threshold
+
+small_blk_enable=false           #Enable the small block decode in BCC decode pipeline.
+small_blk_size = 4              #Block size limits with microinstructions fetched at BCC decode
+
+bmdb_enable = true              #Enable BCC MDB
+parallel_fetch=true             #Enable BFU And IFU parallel fetch when recover from BPC miss BP
+issued_block_count = 2          #Number of issued block per cycle
+vecIssueQLaneNum = 1            #Number of lanes for issue queue type
+ttransIssueQLaneNum = 1         #Number of lanes for issue queue type
+cubeIssueQDepth = 32            #Depth of each issue queue
+ttransIssueQDepth = 32          #Depth of each issue queue
+vecIssueQDepth = 32             #Depth of each issue queue
+mtcIssueQDepth = 32             #Depth of each issue queue
+tmaIssueQDepth = 32
+tauIssueQDepth = 32
+mcallIssueQDepth = 4
+stashIssueQDepth = 32
+tileRenameEntriesDepth = 256    #Depth of tile rename unit entries
+cube_credit_per_acc = 8         #Credit to cube for each bissue acc chain.
+
+dispatch_queue_depth = 2
+parallel_acc_chain_threshold = 2
+
+tile_acc_tag_num = 128
+tile_tag_num = 128 # 128 个tile 每个32KB
+tile_t_hand_size = 25 # Percentage
+tile_u_hand_size = 25 # Percentage
+tile_m_hand_size = 25 # Percentage
+tile_n_hand_size = 25 # Percentage
+tile_stk_hand_size = 0 # Percentage
+
+shared_tile_enable = true
+tile_element_size = 4096        #minimum tile rename size N bytes
+tile_relative_distance = 16
+tile_move_enable = true
+tile_pre_release = true
+
+verbose = false                 #VerboseSwitch of BCC
+skip_tma = false
+skip_tau = false
+skip_cube = false
+skip_vec = false
+
+stack_rename_mode = 0           #Mode 0:No stack rename; mode 1:Stack rename in PE

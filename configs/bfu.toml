@@ -1,0 +1,99 @@
+[BFU]
+
+light_core_enable = false
+
+debug_log = "./bfu_debug.log"
+log_file_enable = false
+debug_enable = false
+bcache_verbose = false
+dump_mispreds = false
+mispreds_file = "./mispreds.log"
+report_header_footprint = true
+two_taken_enable = true
+short_forward_enable = false
+
+ubtb_nset = 2
+ubtb_nway = 128
+ubtb_min_count = 32
+ubtb_max_count = 256
+pbtb_nset = 1024
+pbtb_nway = 8
+pbtb_enable = true
+btb_nbranch = 8
+
+bhc_nset = 256
+bhc_nway = 8
+bhc_min_size = 16384
+bhc_max_size = 131072
+bhc_way_size = 64
+bhc_nostd = 20
+bhc_pf_nostd = 12
+bhc_perfect = false
+bhc_timeout_check = false
+bhc_l2_inclusion_policy = "WI"     # "I":inclusive, "WI":weakly-inclusive(Keep consistent with L2 and IFU)
+
+btlb_nset = 1
+btlb_nway = 64
+btlb_nostd = 4
+
+ibtb_ntable = 4 # table 0 is base table
+ibtb_nway = 8
+ibtb_nset_log2 = [10, 10, 10, 10]
+ibtb_hist_len = [0, 11, 23, 37]
+ibtb_tag_len = [0, 9, 10, 11]
+
+ras_depth = 64
+ras_0cycle_pred = true
+ras_spec_cmt = true
+
+ghr_path_hist = true # this will override ghr_3old
+ghr_path_hist_selfloop = false
+ghr_ft_as_taken = false
+ghr_3old = true
+ghrq_depth = 1024
+ghr_hist_nbit_base = 3
+
+bim_nset = 1024
+bim_nway = 1
+bim_only_tk_noflush = false
+bim_only_nt_noflush = false
+
+tage_ntable = 5
+tage_nway = 8
+tage_nset_log2 = [10, 10, 10, 10, 10]
+tage_hist_len = [11, 19, 29, 37, 61]
+tage_tag_len = [9, 10, 11, 12, 13]
+tage_index_aligned_fb = false
+tage_nbranch = 8
+hash_tag_rpt_enable = true
+
+brq_depth = 256
+
+loop_pred_enable = false
+loop_pred_depth = 16
+loop_pred_conf_thd = 8
+
+update_mode = 1             #mode 0: update in order; mode 1: update in order at commit; mode 2:update at resolve
+
+hwpf_enable = true
+hwpf_policy = "NL"
+hwpf_nl_depth = 1
+hwpf_nl_degree = 4
+hwpf_max_pending_req = 12
+
+lb_enable = false            #Enable loop buffer
+lb_bifurcate_enable = true
+lb_tage_enable=false
+printHotPath = true
+lb_train_delay = 3
+lb_spin_train_delay = 8
+lb_bifur_train_delay = 3
+lb_depth = 32
+lb_entry_depth = 8
+lb_rlist_depth = 32
+lb_degrade_length = 16
+
+local_pipe_num = 8
+bfu_ntaken = 4
+threadCount = 1
+fetch_depth = 256

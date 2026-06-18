@@ -1,0 +1,14 @@
+#ifndef BLOCKISA_MODEL_INTERFACE_BCCTTRANSFLUSH_H
+#define BLOCKISA_MODEL_INTERFACE_BCCTTRANSFLUSH_H
+
+#include "interface/BCCVecFlush.h"
+
+namespace JCore {
+
+// BCC_TTRANS_FLUSH
+typedef BCCVecFlush BCCTTransFlush;
+
+
+} // namespace JCore
+
+#endif  // BLOCKISA_MODEL_INTERFACE_BCCTTRANSFLUSH_H

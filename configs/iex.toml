@@ -1,0 +1,151 @@
+[IEX]
+
+#iex_issue_width = 4                 #Number of issue instruction for issue queue
+#iex_arith_issue_depth = 24          #Depth of arithmetic issue queue
+#iex_mem_issue_depth = 16            #Depth of memory issue queue
+#iex_gsu_issue_depth =  16           #Depth of get/set issue queue
+#iex_lmem_issue_depth = 16           #Depth of get/set issue queue
+
+max_iq_stall=500                    #The threshold cycles of IQ stall.
+
+max_iq_insert_num = 4               #Max instruction number inserted to issue queue per cycle
+
+iexCmdIqDepth = 24               #Depth of IEX CMD issue queue
+iexAluIqDepth = 24               #Depth of IEX ALU issue queue
+iexLdaIqDepth = 32               #Depth of IEX AGU issue queue
+iexStaIqDepth = 16               #Depth of IEX STA issue queue
+iexStdIqDepth = 16               #Depth of IEX STD issue queue
+iexBruIqDepth = 32               #Depth of IEX BRU issue queue
+
+iexCmdIqCount = 1                #Number of IEX CMD issue queue
+iexCmdIqWport = 4                #Number of IEX CMD issue queue wport
+iexCmdPicker  = 1
+iexAluIqCount = 8                #Number of IEX ALU issue queue
+iexAluIqWport = 4
+iexAluPicker  = 1
+iexLdaIqCount = 4                #Number of IEX AGU issue queue
+iexLdaIqWport = 4
+iexLdaPicker  = 1
+iexStaIqCount = 4                #Number of IEX STA issue queue
+iexStaIqWport = 4
+iexStaPicker  = 1
+iexStdIqCount = 4                #Number of IEX STD issue queue
+iexStdIqWport = 4
+iexStdPicker  = 1
+iexBruIqCount = 4                #Number of IEX BRU issue queue
+iexBruIqWport = 4
+iexBruPicker  = 1
+
+simt_separate_ld_st_pipe = false
+simt_iex_alu_iq_count = 1           #Number of SIMT IEX ALU issue queue
+simt_iex_alu_iq_wport = 4           #Number of SIMT IEX ALU issue queue write port
+simt_iex_alu_iq_picker = 2          #Number of SIMT IEX ALU picker
+simt_iex_alu_iq_picker_rr = true    #Enable round robin of SIMT IEX ALU picker (non-heter)
+simt_iex_alu_iq_heter_picker = 1    #Number of SIMT IEX ALU heter picker
+simt_iex_agu_iq_count = 1           #Number of SIMT IEX AGU issue queue
+simt_iex_agu_iq_wport = 3           #Number of SIMT IEX AGU issue queue write port
+simt_iex_agu_iq_picker = 2          #Number of SIMT IEX AGU picker
+simt_iex_std_iq_count = 1           #Number of SIMT IEX STD issue queue
+simt_iex_std_iq_wport = 3
+simt_iex_std_iq_picker = 1
+simt_iex_sca_iq_count = 1
+simt_iex_sca_iq_picker = 2
+simt_iex_sca_iq_wport = 4
+
+simt_iex_read_port_num        = 6     #0:unlimited, design:6
+# ===== cfg1 =====
+simt_iex_alu0_src0_rd_port  = [ 0,2 ]
+simt_iex_alu0_src1_rd_port  = [ 3,0 ]
+simt_iex_alu0_src2_rd_port  = [ 2,3 ]
+simt_iex_alu1_src0_rd_port  = [ 1,0 ]
+simt_iex_alu1_src1_rd_port  = [ 0,1 ]
+simt_iex_alu1_src2_rd_port  = [ 2,3 ]
+simt_iex_alu2_src0_rd_port  = [ 3,1 ]
+simt_iex_alu2_src1_rd_port  = [ 1,2 ]
+simt_iex_alu2_src2_rd_port  = [ 2,3 ]
+simt_iex_agu0_src0_rd_port  = [ 2,3 ]
+
+simt_iex_agu0_src1_rd_port  = [ 0,1 ]    #not used
+simt_iex_agu0_src2_rd_port  = [ 1,2 ]    #not used
+simt_iex_agu1_src0_rd_port  = [ 4 ]
+simt_iex_agu1_src1_rd_port  = [ 5 ]
+simt_iex_agu1_src2_rd_port  = []    #not used
+
+simt_iex_alu_iq_fmla_picker     = [ 0, 1 ]
+simt_iex_alu_iq_ialu_picker     = [ 0, 1 ]
+simt_iex_alu_iq_cvt_picker      = [ 1 ]
+simt_iex_alu_iq_mac_picker      = [ 0 ]
+simt_iex_alu_iq_div_picker      = [ 0 ]
+simt_iex_alu_iq_perm_picker     = [ 1 ]
+
+simt_iex_alu_iq_depth = 32          #Depth of SIMT IEX ALU issue queue
+simt_iex_agu_iq_depth = 32          #Depth of SIMT IEX AGU issue queue
+simt_iex_std_iq_depth = 32          #Depth of SIMT IEX STD issue queue
+simt_iex_sca_iq_depth = 32          #Depth of SIMT IEX Scalar issue queue
+
+simt_iex_vec_rslv_cflt = true       #Stall by resolve bus conflict, vec pipe
+simt_iex_sca_rslv_cflt = true       #Stall by resolve bus conflict, vec-sca pipe
+simt_iex_max_ex_no_rslv_cflt = 6    #Maximum execution cycle for no resolve bus conflict (0 = off)
+simt_iex_stall_per_pipe = false     #Stall by iter cycles by per pipe check
+simt_iex_fdiv_iter_cycles = 0       #Number of iter cycles for FDIV exec unit
+simt_iex_agu_oldest_option = 1      #Oldest pick option for VEC AGU. 0:SlotIdx, 1:iqCycle
+simt_iex_alu_oldest_option = 1      #Oldest pick option for VEC ALU. 0:SlotIdx, 1:iqCycle
+simt_iex_alu_iq_heter_picker_option = 0 #Heter Picker Logic. 0:Cancel, 1:Can't Select
+simt_iex_iq_dealloc_option = 2      #0:E1, 1:I2, 2:P1(AfterIssue)
+simt_vrf_bank_num = 4               #VRF Bank number
+
+mtc_iex_alu_iq_count = 16          #Number of SIMT IEX ALU issue queue
+mtc_iex_lda_iq_count = 4           #Number of SIMT IEX AGU issue queue
+mtc_iex_sta_iq_count = 4           #Number of SIMT IEX STA issue queue
+mtc_iex_std_iq_count = 4           #Number of SIMT IEX STD issue queue
+mtc_iex_bru_iq_count = 4           #Number of SIMT IEX BRU issue queue
+
+mtc_iex_alu_iq_depth = 48          #Depth of SIMT IEX ALU issue queue
+mtc_iex_lda_iq_depth = 32          #Depth of SIMT IEX AGU issue queue
+mtc_iex_sta_iq_depth = 16          #Depth of SIMT IEX STA issue queue
+mtc_iex_std_iq_depth = 16          #Depth of SIMT IEX STD issue queue
+mtc_iex_bru_iq_depth = 32           #Depth of SIMT IEX BRU issue queue
+
+mtc_iex_alu_iq_wport = 4
+mtc_iex_lda_iq_wport = 4
+mtc_iex_sta_iq_wport = 4
+mtc_iex_std_iq_wport = 4
+mtc_iex_bru_iq_wport = 4
+
+mtc_iex_alu_iq_picker = 1
+mtc_iex_lda_iq_picker = 1
+mtc_iex_sta_iq_picker = 1
+mtc_iex_std_iq_picker = 1
+mtc_iex_bru_iq_picker = 1
+
+iex_iq_write_width = 1              #Number of issue queue write port per issue queue
+iex_iq_read_width = 1               #Number of issue queue read port per issue queue
+
+iex_retire_width = 4                #Number of instructions for IEX to retire per cycle
+iex_load_wb_width = 4               #Number of writeback load instructions
+
+global_set_req_width = 4            #Number of global set write port per cycle
+ld_rscv_width = 4                   #Allows to receive the maximum number of load return
+
+iex_dispatch_mode = 1               #Mode 0: normal mode(replay for oldest block); Mode 1: reserve entry for oldest block; Mode 2: limit entry for each PE
+iex_iq_reserve_entry=1              #Entries reserved for IQ
+iex_cmdiq_reserve_count=4           #Number of reserved CMD IQ
+iex_aluiq_reserve_count=4           #Number of reserved ALU IQ
+iex_iq_reserve_count=1              #Number of reserved other IQ
+store_cnt_to_limit_load= 8           #Limit the load instructions launch by numbers of store
+
+iex_mdb_confidence=10               #Limit the addr register
+iex_mdb_enable=true                       #Limit the iex_mdb
+issuedPerIqLane=2                #Limit number in per issue queue.
+simt_issued_per_iq_lane=2           #Limit number in per simt issue queue.
+mtc_issued_per_iq_lane=2           #Limit number in per simt issue queue.
+
+iex_disp_fast_reply_enable=false    #switch of fast reply for mset/mcopy in iex_dispatch
+
+verbose = false                 #VerboseSwitch of IEX
+
+isq_order = 0                   #0: no need to keep order in isq; 1: keep order within threads; 2: make isq a fifo
+VAB_EN = false                                       # gather||scatter enable
+
+predMaskFake=false
+predMaskFakePC=71496

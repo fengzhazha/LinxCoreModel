@@ -1,0 +1,27 @@
+[L2]
+
+cache_nset = 4096    # power of 2
+cache_nway = 8
+input_nport = 4
+cache_nport = 2 # <= input_nport
+l2l1_nport = 2
+l1i_l2_inclusion_policy = "WI" # "I":inclusive, "WI":weakly-inclusive(Keep consistent with IFU and BFU)
+l1d_l2_inclusion_policy = "WI" # "I":inclusive, "WI":weakly-inclusive(Keep consistent with LSU)
+inclusion_policy = "I"      # Select from I or NI
+missq_depth = 64
+deny_l2_pref_thr = 4        # The threshold to deny L2 prefetch requesets
+deny_l2_normal_thr_1 = 2      # Reserve entry for prefecth if the accurary is high
+pref_accurary_per_1 = 75      # Prefecth accurary threshold to reserve for
+deny_l2_normal_thr_2 = 4      # Reserve entry for prefecth if the accurary is high
+pref_accurary_per_2 = 90      # Prefecth accurary threshold to reserve for
+deny_l2_normal_thr_3 = 8      # Reserve entry for prefecth if the accurary is high
+pref_accurary_per_3 = 100      # Prefecth accurary threshold to reserve for
+pref_l2_throw_thr = 94      # Threshold of Percentage of prefetch being throw away
+sanity_check = false
+verbose = false
+cache_poll_filter_bit0=6      # bit1 - bit0 + 1 == bit3 - bit2 + 1 == log2 (poll_depth) 
+cache_poll_filter_bit1=18
+cache_poll_filter_bit2=19
+cache_poll_filter_bit3=31
+cache_poll_filter_depth=8192  # The depth of cache pollution filter
+dpref_feedback_interval=8192   # The interval(replace cacheline numbers) of L2Cache feedback to data prefetcher.

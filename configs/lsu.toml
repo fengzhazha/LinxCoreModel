@@ -1,0 +1,52 @@
+[LSU]
+
+seq_mode = false            # Sequential virtual LSU mode
+verbose = false             # Verbose switch
+l2_latency = 10             # L2 latency
+mdu_depth = 256
+stq_depth = 2048
+tcopyq_depth = 8
+scalar_stq_depth = 256
+max_sliding_windows = 256
+pref_enable = false
+pref_stride_enable = false
+pref_stream_enable = false
+pref_l2_send_thresold = 8
+pref_stream_dyn_enable = true
+fdp_stream_enable=true
+fdp_stream_miss_enable=true
+pref_stream_distance = 512
+pref_stream_propor_base=1000
+pref_stream_accuracy_high = 750
+pref_stream_accuracy_low = 400
+pref_stream_thre_lateness = 100
+pref_stream_thre_poll = 50
+pref_stream_thre_poll_high = 250
+pref_stream_thre_miss = 400
+
+max_prefq_size = 512        #The threshold depth of prefetch queue
+soc_clock_gating = true
+max_lsu_stall = 500         #The threshold cycles of lsu stall.
+max_load_latency = 500      #The threshold cycles of load latency.
+load_to_use_enable = true  # Switch for load_to_use.
+max_victim_check = 2000     #The threshold cycles of victim cacheline check
+
+mdb_release_weight = 25     #Percentage of MDB pending release
+mdb_max_weight = 3          #Confidence weight for MDB
+mdb_inc_step = 1            #Increase step of MDB weight
+
+addr_cnt_enable=false
+
+lsu_width = 64
+pref_width = 4
+lu_clusters_count = 1
+lu_cluster_disp_bit_arr = []
+lu_clusters_depth = 2048
+scalar_lu_clusters_depth = 256
+lu_clusters_data_size = 0
+l1_pick_count = 64
+l2_pick_count = 4
+rslv_capcity = 64
+
+store_commit_count = 64     #Store commit number from stq
+replay_thr = 50             #Percentage threshold of ldq/stq deadlock replay, replay more block as the value decreasing

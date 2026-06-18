@@ -1,0 +1,19 @@
+[DFX]
+
+resVerifyEnable = false
+deadLockThreshold = 8000
+verifyParBlockTileReg = false
+verifyParBlockMinst = false
+verifyScalarBlockMinst = true
+
+printPipeView = false
+printGroupInfo = true
+printInstInfo = true
+
+pipeViewOutFile = "gfsim.pipeview.log"
+swimLaneFile = "gfsim.swimlane.json"
+
+recordDepency = false
+
+pipeViewFilterEnable = false
+pipeViewFilterSet = ["VECTOR", "CUBE", "TMA1", "VECLITE"]

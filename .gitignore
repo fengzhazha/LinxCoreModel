@@ -1,0 +1,57 @@
+*~
+*.o
+*.so
+*.orig
+# Byte compiled python modules.
+*.pyc
+# vim swap files
+.*.sw?
+.sw?
+#OS X specific files.
+.DS_store
+
+# Nested build directory
+/build*
+/.vscode/*
+/.codemate/*
+
+/bin
+/cmake-build-debug
+/test
+/lib
+/export_generic_mp_generic
+#==============================================================================#
+# Explicit files to ignore (only matches one).
+#==============================================================================#
+# Various tag programs
+/tags
+/TAGS
+/GPATH
+/GRTAGS
+/GSYMS
+/GTAGS
+.gitusers
+autom4te.cache
+cscope.files
+cscope.out
+autoconf/aclocal.m4
+autoconf/autom4te.cache
+/compile_commands.json
+# Visual Studio built-in CMake configuration
+/CMakeSettings.json
+# CLion project configuration
+/.idea
+binutils/
+*_config.cpp
+*_config.h
+
+
+*wecode*
+*.preamble
+
+isa/codec/generatedfiles
+/parameter
+log*
+*.log
+!log.h
+model/soc/lib/.extracted

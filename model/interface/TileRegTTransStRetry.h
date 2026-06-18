@@ -1,0 +1,15 @@
+#ifndef BLOCKISA_MODEL_INTERFACE_TILEREGTTRANSSTRETRY_H
+#define BLOCKISA_MODEL_INTERFACE_TILEREGTTRANSSTRETRY_H
+
+#include "interface/TileRegVecStRetry.h"
+
+namespace JCore {
+
+
+// TILEREG_TTRANS_ST_RETRY
+typedef TileRegVecStRetry TileRegTTransStRetry;
+
+
+} // namespace JCore
+
+#endif  // BLOCKISA_MODEL_INTERFACE_TILEREGTTRANSSTRETRY_H

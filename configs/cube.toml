@@ -1,0 +1,53 @@
+[CUBE]
+
+uop_isq_entry_size = 32                       #Depth of the identity matrix issq
+limitSubChainIsqEntry = false
+subChainIsqEntryNum = 8
+tcvt_isq_entry_size = 32                      #Depth of the copy matrix issq
+l0a_buffer_entry = 128                        #buffer size
+l0a_buffer_entry_width = 4096                 #buffer entry，4096bit
+l0b_buffer_entry = 128                        #buffer size
+l0b_buffer_entry_width = 4096                 #buffer entry，4096bit
+l0c_buffer_entry = 128                        #buffer size
+l0c_buffer_entry_width = 8192                 #buffer entry，8192bit
+l0a_mx_size = 8                               #8KB
+l0b_mx_size = 8                               #8KB
+cude_issue_width = 1
+cude_issueq_size = 32
+cube_core_count = 1
+cube_thread_num = 1
+cube_data_check = true
+setATileSizeRow = 0
+setATileSizeCol = 0
+setBTileSizeCol = 0
+enableLRU = true
+maddUopExeCycle = 11
+showTMUPipeView = true
+perfectLoad = false
+perfectScaleLoad = false
+
+blockCmdBufferSize = 4 # Maximum number of blockCmd received
+rob_size = 1024
+hand_num = 32
+hand_rel_index_dis = 16
+a_depth = 256
+b_depth = 256
+c_depth = 256
+c_hand_num = 64
+ib_size = 64
+m_width = 16
+n_width = 16
+k_width = 16
+a_fractal_size = 512 # Bytes
+b_fractal_size = 512 # Bytes
+c_fractal_size = 1024 # Bytes
+
+load_ostd = 64
+mad_iq_depth = 32
+acc_iq_depth = 32
+
+mad_exec_delay = 8
+fix_pipe_delay = 8
+stash_for_vec_enable = true
+
+block_cmd_reorder = false

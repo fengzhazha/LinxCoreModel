@@ -1,0 +1,31 @@
+[IFU]
+
+icache_depth = 128               #Number of sets
+icache_width = 8                #Number of ways in one set
+icache_min_size = 16384         #Min size of icache
+icache_max_size = 65536         #Max size of icache
+icache_way_size = 64            #size of cache line
+icache_nostd = 302               #Size of ICache missq
+icache_pf_nostd = 300             #Size of ICache prefetch request in missq
+icache_perfect = false          #Enable the icache perfect fetch.
+icache_pref_enable=true         #Enable the icahce prefetch.
+icache_prefq_depth=280          #Depth of IFU prefetch queue (ifu_buffer_depth * 2 + BROB depth, make sure that prefetching cannot throw out)
+l1i_l2_inclusion_policy = "WI"     # "I":inclusive, "WI":weakly-inclusive(Keep consistent with L2 and BFU)
+
+verbose = false
+ibuf_depth = 64                 #Depth of instruction buffer
+maxWidth = 4096                 #Max with depth
+ifu_bundle_width = 1            #Number of instructions in a bundle
+ifu_buffer_depth = 8            #Depth of fetch request buffer from PE
+ifu_fetch_width = 64            #Number of bytes for IFU to fetch per cycle
+req_mode = 0                    #0:Packet to L2 (works on lsu.seq_mode=false), 1:GFUMemReq
+enable_merge = true              #Enable merge fetch request for two consecutive TPC blocks
+
+inst_bp_mode = 2                #0:follow the last, 1:perfect bp, 2:nohistory 2bit bp
+commit_update = true           #When to update the predictor
+
+ifu_fetch_req_num = 1           #Number of fetch request for ifu
+ifu_thread_num = 1              #Number of thread for ifu
+ifu_pref_num = 2
+ifu_pref_done_map_depth = 10
+ifu_thread_fetch_enable = true

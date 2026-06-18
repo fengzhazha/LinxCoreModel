@@ -1,0 +1,7 @@
+[Stack]
+
+sp_preg_count = 512             #Number of physical registers for stack
+stack_rename_block_num = 8      #Maximum of stack rename block
+stack_history_enable = true     #Enable stack history table
+rename_new_block = false        #Enable renaming blocks executed at the first time
+conflict_count = 24             #Count step for stack incorrect

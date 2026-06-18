@@ -1,0 +1,6 @@
+[SPE]
+
+decodeWidth = 4
+renameWidth = 4
+speROBDepth = 128
+retiredWidth = 4

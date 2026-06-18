@@ -1,0 +1,24 @@
+[VectorLiteCore]
+srcInputCount  = 3                                # max 3 src
+tileBufferCout = 128
+dataBlockCount = 8                                # 每个entry的数据块数量（带宽相关）
+dataBlockSize = 256                               #每个数据块的大小（字节）
+writeRegBandWidth = 256                           #ring data channel 带宽
+tileWrBufferEntryUopNum = 4                       # UOP number per entry. 2KB / 512B
+tileWrBufferDepth = 32
+vec_nread = 3
+stash_mode = false                                   #cube tranfer data to tile cache
+tileBufferEnable = false
+tileOpFusion = false
+expFlopsDouble = false
+perfectColSum = false
+
+vrobDepth = 16
+stashReqQueDepth = 16
+siqDepth = 16
+siqToUiqIssueLimit = 4
+uiqPipeNum = 4
+uiqDepth = 16
+uiqAllocMinEntryNum = 4                             # Minimum available entry number for SIQ to issue to UIQ
+exeMaxLatency = 6
+perfectReduceOp=true

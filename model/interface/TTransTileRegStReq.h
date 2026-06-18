@@ -1,0 +1,15 @@
+#ifndef BLOCKISA_MODEL_INTERFACE_TTRANSTILEREGSTREQ_H
+#define BLOCKISA_MODEL_INTERFACE_TTRANSTILEREGSTREQ_H
+
+#include "interface/VecTileRegStReq.h"
+
+namespace JCore {
+
+
+// TTRANS_TILEREG_ST_REQ
+typedef VecTileRegStReq TTransTileRegStReq;
+
+
+} // namespace JCore
+
+#endif  // BLOCKISA_MODEL_INTERFACE_TTRANSTILEREGSTREQ_H

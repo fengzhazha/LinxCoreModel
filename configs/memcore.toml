@@ -1,0 +1,7 @@
+[MEMCORE]
+
+t0_total_size = 12288                       # TA TB TC size
+max_thread_req = 4                          # number of thread
+verbose = false                             # debug log
+max_mem_data_byte = 64                     # The size of data sent to memory
+max_ub_data_byte = 64                     # The size of data sent to memory

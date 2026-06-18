@@ -1,0 +1,96 @@
+%SrcL       6:5
+%SrcR       11:5
+%RegDst     11:5
+
+%uimm_6_10  6:5
+%uimm_6_13       6:8
+%uimm_6_10_shift1  6:5  !function=ExShift1
+
+%simm_6_10  6:s5
+%simm11_15  11:s5
+%simm_4_15_shift1  4:s12  !function=ExShift1
+%simm11_15_shift2  11:s5  !function=ExShift2
+%simm11_15_shift3  11:s5  !function=ExShift3
+
+%Mode_14_15      14:2
+%brType_11_13    11:3
+%blockType_6_10  6:5
+%loopNest_14_15  14:2
+%loopNest_11_13  11:3
+%regSrc          6:5
+
+# Argument sets:
+&InstInfo           src0 src0Type \
+                    src1 src1Type \
+                    src2 src2Type \
+                    dst0 dst0Type \
+                    isBinst
+
+# Formats linx:
+# dst0=31表示隐含写入T队列
+@C_MOVR         ..... ..... .. ... .     &InstInfo       dst0=%RegDst dst0Type=0  src0=%SrcL  src0Type=0
+@C_MOVI         ..... ..... .. ... .     &InstInfo       dst0=%RegDst dst0Type=0  src0=%simm_6_10  src0Type=1
+@C_SETRET       ..... ..... .. ... .     &InstInfo       src0=%uimm_6_10_shift1  src0Type=2  dst0=10  dst0Type=0
+@C_ARITH        ..... ..... .. ... .     &InstInfo       src0=%SrcL  src0Type=0  src1=%SrcR  src1Type=0  dst0=31  dst0Type=0
+@C_SETC         ..... ..... .. ... .     &InstInfo       src0=%SrcL  src0Type=0  src1=%SrcR  src1Type=0
+@C_LD           ..... ..... .. ... .     &InstInfo       src0=%SrcL  src0Type=0  src1Type=1  dst0=31  dst0Type=0
+@C_SD           ..... ..... .. ... .     &InstInfo       src0=24  src0Type=0  src1=%SrcL  src1Type=0  src2Type=1
+@C_EXT          .. ... ..... .. ... .    &InstInfo       src0=%SrcL  src0Type=0  dst0=31  dst0Type=0
+@C_SETC_TGT     .. ... ..... .. ... .    &InstInfo       src0=%SrcL  src0Type=0
+@C_CMP_S        .. ... ..... .. ... .    &InstInfo       src0=24  src0Type=0  src1=%simm_6_10  src1Type=1  dst0=31  dst0Type=0
+@C_CMP_U        .. ... ..... .. ... .    &InstInfo       src0=24  src0Type=0  src1=%uimm_6_10  src1Type=2  dst0=31  dst0Type=0
+@C_SSRGET       .. ... ..... .. ... .    &InstInfo       src0=%uimm_6_10  src0Type=3  dst0=31  dst0Type=0
+
+
+@C_BSTART            .. ... ..... .. ... .    &InstInfo       isBinst=2  src0=%blockType_6_10  src0Type=2  src1=%brType_11_13  src1Type=2  src2=%Mode_14_15  src2Type=2
+@C_BSTART_BRANCH     ............ ... .       &InstInfo       isBinst=2  src0=%simm_4_15_shift1  src0Type=1
+@C_B_DIMI            .. ........ .. ... .     &InstInfo       isBinst=2  src0=%loopNest_14_15  src0Type=2 src1=%uimm_6_13  src1Type=2
+@C_B_DIM             .. ... ..... .. ... .    &InstInfo       isBinst=2  src0=%loopNest_11_13  src0Type=2 src1=%regSrc  src1Type=0
+
+# Compressed Instruction
+#  block instruction encoding
+
+# MPAR MSEQ VPAR VSEQ也归纳在C.BSTART中, 以BlockType固定为00011区分
+BSTART        .. ... ..... 00 000 0    @C_BSTART
+
+BSTART_DIRECT ............ 001 0       @C_BSTART_BRANCH
+BSTART_COND   ............ 010 0       @C_BSTART_BRANCH
+{
+  B_DIM         11 ... ..... 11 110 0    @C_B_DIM
+  B_DIMI        .. ........ 11 110 0     @C_B_DIMI
+}
+
+#  micro instruction encoding
+MOVR          ..... ..... 00 011 0     @C_MOVR
+{
+  MOVI          ..... ..... 01 011 0     @C_MOVI
+  SETRET        01010 ..... 01 011 0     @C_SETRET
+}
+ADD           ..... ..... 00 100 0     @C_ARITH
+SUB           ..... ..... 01 100 0     @C_ARITH
+AND           ..... ..... 10 100 0     @C_ARITH
+OR            ..... ..... 11 100 0     @C_ARITH
+
+SETC_EQ       ..... ..... 10 011 0     @C_SETC
+SETC_NE       ..... ..... 11 011 0     @C_SETC
+
+LWI           ..... ..... 00 101 0     @C_LD    src1=%simm11_15_shift2
+LDI           ..... ..... 01 101 0     @C_LD    src1=%simm11_15_shift3
+SWI           ..... ..... 10 101 0     @C_SD    src2=%simm11_15_shift2
+SDI           ..... ..... 11 101 0     @C_SD    src2=%simm11_15_shift3
+ADDI          ..... ..... 00 110 0     @C_LD    src1=%simm11_15
+
+SETC_TGT      00 000 ..... 01 110 0    @C_SETC_TGT
+SEXT_B        01 000 ..... 01 110 0    @C_EXT
+SEXT_H        01 001 ..... 01 110 0    @C_EXT
+SEXT_W        01 010 ..... 01 110 0    @C_EXT
+ZEXT_B        01 011 ..... 01 110 0    @C_EXT
+ZEXT_H        01 100 ..... 01 110 0    @C_EXT
+ZEXT_W        01 101 ..... 01 110 0    @C_EXT
+
+CMP_EQI       00 000 ..... 10 110 0    @C_CMP_S
+CMP_NEI       00 001 ..... 10 110 0    @C_CMP_S
+SLLI          00 010 ..... 10 110 0    @C_CMP_U
+SRLI          00 011 ..... 10 110 0    @C_CMP_U
+SSRGET        10 000 ..... 10 110 0    @C_SSRGET
+

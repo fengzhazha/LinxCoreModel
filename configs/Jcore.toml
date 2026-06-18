@@ -1,0 +1,17 @@
+[JCore]
+
+cube_core_count = 1
+cube_thread_num = 1
+vector_core_cout = 1
+vector_thread_num = 4
+tiletrans_core_count = 1
+tiletrans_thread_num = 4
+max_thread_num = 4
+
+show_utilization=false
+show_tile_reg_ls_cnt=false
+show_mem_ls_cnt=true
+show_tile_alive_size=true
+show_tile_stall=false
+debug_mode = false
+show_bcc=false

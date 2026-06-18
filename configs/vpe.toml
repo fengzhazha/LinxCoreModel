@@ -1,0 +1,11 @@
+[VPE]
+
+pe_bbuf_depth = 16              #Number of blocks buffered before PE execution
+inst_buffer_size = 4
+decodeWidth = 4
+renameWidth = 4
+retireWidth = 4
+vpeROBDepth = 128
+threadNum = 4
+
+vcSidMax = 256

@@ -1,0 +1,12 @@
+[BridgeTable]
+
+GLOBAL_MEMORY_CACHELINE_SIZE = 64
+SMALL_Z_FRACTAL_ROW_BYTES = 32
+
+BPQ_BANDWIDTH = 2               # Number of requests BPQ can receive per cycle
+
+BRIDGE_DATA_BUFFER_SIZE = 8192
+RFB_OUTSTANDING_REQ_NUM = 4096  # Request capacity that RFB can handle
+WCB_OUTSTANDING_REQ_NUM = 4096  # Request capacity that WCB can handle
+NRFB_READ_BANDWIDTH     = 256   # The maximum aaccelss bandwidth of the RING.
+SRFB_READ_BANDWIDTH     = 64    # The maximum aaccelss bandwidth of the SOC.

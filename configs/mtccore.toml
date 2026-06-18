@@ -1,0 +1,31 @@
+[MtcCore]
+
+mtc_core_thread_num = 4                      # number of vector core thread
+mtc_core_load_request_queue_size = 200000         # The size of the load request Queue
+mtc_core_store_request_queue_size = 100000        # The size of the store request Queue
+mtc_core_lm_work_req_num = 1                 # The vcore LM can handle the number of BCCVecReq.
+mtc_core_grob_distribute_num = 1
+mtc_core_grob_depth = 512
+
+enable_tile_cache = false
+ta_set = 32                                         # Number of ta set
+ta_way = 2                                          # Number of ta way
+ta_entries = 32                                     # Number of ta entry of each way
+ta_waysize = 256                                    # Bytes of each ta buffer entry
+ta_ldq_size = 1024                                  # load queue size
+ta_stq_size = 1024                                  # store queue size
+ta_tile_ld_band = 2                                 # sent to tile load band limit
+ta_tile_st_band = 1                                 # sent to tile store band limit
+ta_scb_entry_size = 128
+ta_store_retire_band = 8                            # sent to scb band limit
+
+loadCountPerCycle = 64                              # handle num of ld memreq per one cycle
+storeCountPerCycle = 64                             # handle num of st memreq per one cycle
+
+fetch_blocks_width = 1                               # Fetch block per cycle
+
+enable_scb = true
+
+fractal_row_bytes = 32
+fractal_row_num = 16
+

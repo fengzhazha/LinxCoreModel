@@ -1,0 +1,11 @@
+[FakeBCC]
+
+cude_issue_width = 1
+cude_issueq_size = 32
+vec_issue_width = 1
+vec_issueq_size = 32
+ttrans_issue_width = 1
+ttrans_issueq_size = 32
+band_width = 16
+brob_depth = 256
+retire_width = 8

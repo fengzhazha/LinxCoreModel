@@ -1,0 +1,61 @@
+[TMU]
+
+tile_reg_size = 2560                        #tile register size(KB)
+relative_pravite_size = 0                   #pravite size used for T/U/M/N(B)
+bank_select_bits = [11, 12]                 #bank first dimension: select address bits for banks (4 rows)
+bank_ncols = 4                              #bank second dimension: 4 colnumns
+bank_intervel = 512                         #continuous intervel data bits for banks(this*rowNum should be lower than bank_select_bits[0])
+bank_element_size = 1                       #bank minimum size: n bytes(needing adjust with bank_select_bits)
+vec_nread = 2                               #read port for vector core
+ttrans_nread = 1                            #read port for transfer core
+cube_nread = 1                              #read port for cube core
+vec_nwrite = 1                              #write port for vector core
+ttrans_nwrite = 1                           #write port for transfer core
+cube_nwrite = 1                             #write port for cube core
+perfect_mode = true                         #enable perfect mode : no bank conflict
+mask_element_size = 1                       #n bytes every mask bit replesent for
+rename_fifo_depth = 16
+direct_aaccelss_latency = 7
+
+tmu_mode = 0                                #Mode 0: Ring; Mode 1: xbar; Mode 2: direct connect
+only_cube_to_ring=false
+dual_pe_ring_mode = false                   #4cube + 2 vector stations config
+spb_depth = 2
+mgb_depth = 4
+frq_entry_size = 10                          #tile register pipe frq depth
+tile_pipe_line = 6
+starvation_threshold = 8
+
+ring_node_num = 8                           # Numbers of ring nodes
+node_intervel = 256                         # N bytes instervel in ring
+
+cube_read_port = [0]
+cube_write_port = [1]
+mtc_read_port = [2]
+mtc_write_port = [3]
+bcc_port = [4]
+vec_read_port = [5, 6]
+vec_write_port = [7]
+tma_read_port = [2,8]
+tma_write_port = [3,9]
+
+vec_station_id = 11
+mem_range_station_id = 18
+mem_read_port_num = 2
+tile_ren_entry_size = 256
+tmu_other_req_priority_times = 1
+tmu_stash_rand = true
+tmu_stash_backpressure_perception = false
+tmu_stash_outstanding_opt = true
+tmu_stash_outstanding = 8
+
+ring_swim_continous_time_1 = 8
+ring_swim_continous_time_2 = 16
+ring_swim_continous_time_3 = 30
+ring_swim_continous_time_4 = 80
+
+concurrent_on_off_ring = true # allow concurrent swap of an injection pkt and an ejection pkt at the same node
+nonblocking_spb_processing = true
+nonblocking_tma_processing = true
+closest_injection = true
+strict_closest_injection = true

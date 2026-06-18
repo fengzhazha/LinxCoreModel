@@ -1,0 +1,710 @@
+%SrcRType   25:2
+%SrcType    25:2
+%SrcType_cvt    25:2
+%DstType_cvt    27:5
+%SrcP       27:5
+%SrcD       27:5
+%SrcR       20:5
+%SrcL       15:5
+%RegDst     7:5
+
+%PRED_IMM   24:4
+%SUCC_IMM   20:4
+%far        27:1
+%aq         26:1
+%rl         25:1
+
+%LayOut     7:5
+%rl_15      15:1
+%aq_16      16:1
+%atom_17    17:1
+%far_18     18:1
+%trap_19    19:1
+%canon      25:1
+%DR         26:1
+%RMode      15:3
+%S          26:1
+%CMode      29:3
+
+%Jump_Vld   15:1
+%Jump_Flag  16:1
+%Temprature 17:2
+%PreFetch   20:12
+%begin      15:1
+%reserve    16:16
+
+%request_type   20:4
+
+%imms       26:6
+%imml       20:6
+%imms_inc   26:6 !function=AutoInc1
+%imml_inc   20:6 !function=AutoInc1
+
+%shamt_7_11  7:5
+%shamt_20_24 20:5
+%shamt_20_25 20:6
+%shamt_27_31 27:5
+
+%uimm_20_31                  20:12
+%uimm_22_26                  22:5
+%uimm_7_11_and_20_31         7:5 20:12
+%uimm_7_11_and_25_31_shift3  7:5 25:7 !function=ExShift3
+%uimm_12_14                  12:3
+
+%simm_4_15                   4:s12
+%simm_7_31                   7:s25
+%simm_12_31                  12:s20
+%simm_15_31                  15:s17
+%simm_20_31                  20:s12
+%simm_7_11_and_20_31         7:s5 20:12
+%simm_7_11_and_25_31         7:s5 25:7
+%simm_7_11_and_15_31_shift1  7:s5 15:17 !function=ExShift1
+%simm_7_11_and_25_31_shift1  7:s5 25:7 !function=ExShift1
+%simm_7_11_and_25_31_shift2  7:s5 25:7 !function=ExShift2
+%simm_7_11_and_25_31_shift3  7:s5 25:7 !function=ExShift3
+%simm_7_31_shift1            7:s25  !function=ExShift1
+%simm_12_31_shift1           12:s20 !function=ExShift1
+%simm_12_31_shift12          12:s20 !function=ExShift12
+%simm_15_31_shift1           15:s17 !function=ExShift1
+%simm_20_31_shift1           20:s12 !function=ExShift1
+%simm_20_31_shift2           20:s12 !function=ExShift2
+%simm_20_31_shift3           20:s12 !function=ExShift3
+%simm_25_31_shift1           25:s7  !function=ExShift1
+%simm_25_31_shift2           25:s7  !function=ExShift2
+%simm_25_31_shift3           25:s7  !function=ExShift3
+
+%regSrc0              15:5
+%regSrc1              20:5
+%regSrc2              27:5
+%regDst               7:5
+%srcTile0             20:6
+%srcTile1             26:6
+%dstTile              7:3
+%s0R                  10:1
+%s1R                  11:1
+%uimm_15_18           15:4
+%last                 19:1
+%tileFunc             12:3
+%srcType              15:5
+%dstType_20_25        20:5
+%padValue_27_28       27:2
+
+%BrType_12_14         12:3
+%BlockType_7_11       7:5
+
+%dataType             27:5
+%mode                 25:2
+%mode_29              29:1
+%function             20:5
+%opcodeBlock          15:5
+
+%DepSrc               15:5
+%DepDst               7:5
+
+# Argument sets:
+
+&InstInfo           srcType  dstType \
+                    aq  rl  far atom trap canon dr \
+                    srcRType \
+                    srcRIndex \
+                    src0 src0Type src0Shamt \
+                    src1 src1Type src1Shamt \
+                    src2 src2Type src2Shamt \
+                    src3 src3Type \
+                    src4 src4Type \
+                    src5 src5Type \
+                    src6 src6Type \
+                    src7 src7Type \
+                    src8 src8Type \
+                    src9 src9Type \
+                    dst0 dst0Type \
+                    isBinst last \
+                    s0R  s1R  tileFunc
+
+# Formats linx:
+
+
+@arith          ..... .. ..... ..... ... ..... ... ... .    &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        srcRType=%SrcRType \
+                                                                        src2=%shamt_27_31 src2Type=2 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@shift          ..... .. ..... ..... ... ..... ... ... .    &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@arith_ui       ............ ..... ... ..... ... ... .      &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%uimm_20_31 src1Type=2 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@arith_si       ............ ..... ... ..... ... ... .      &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1Type=1 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@shift_i        ...... ...... ..... ... ..... ... ... .     &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%shamt_20_25 src1Type=2 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@shift_i_w      ....... ..... ..... ... ..... ... ... .     &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%shamt_20_24 src1Type=2 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@compare        ..... .. ..... ..... ... ..... ... ... .    &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR  src1Type=0 \
+                                                                        srcRType=%SrcRType \
+                                                                        dst0=%RegDst dst0Type=0
+
+@setc           ..... .. ..... ..... ... ..... ... ... .    &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        srcRType=%SrcRType
+
+@setc_si        ............ ..... ... ..... ... ... .      &InstInfo   src0=%shamt_7_11 src0Type=2 \
+                                                                        src1=%SrcL src1Type=0 \
+                                                                        src2=%simm_20_31 src2Type=1
+
+@setc_ui        ............ ..... ... ..... ... ... .      &InstInfo   src0=%shamt_7_11 src0Type=2 \
+                                                                        src1=%SrcL src1Type=0 \
+                                                                        src2=%uimm_20_31 src2Type=2
+
+@bo             ...... ...... ..... ... ..... ... ... .     &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%imms src1Type=2 \
+                                                                        src2=%imml_inc src2Type=2 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@MADD           ..... .. ..... ..... ... ..... ... ... .    &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        src2=%SrcD src2Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@constant       .................... ..... ... ... .        &InstInfo   src0=%simm_12_31_shift12 src0Type=1 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@SETRET         .................... ..... ... ... .        &InstInfo   src0=%simm_12_31_shift1 src0Type=1 \
+                                                                        dst0=10 dst0Type=0
+
+@SSRGET         ............ ..... ... ..... ... ... .      &InstInfo   src0=%uimm_20_31 src0Type=3 \
+                                                                        dst0=%RegDst dst0Type=0
+@SSRSET         ............ ..... ... ..... ... ... .      &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%uimm_20_31 src1Type=3
+
+@SETC_TGT       ............ ..... ... ..... ... ... .      &InstInfo   src0=%SrcL src0Type=0
+
+@store          ..... .. ..... ..... ... ..... ... ... .    &InstInfo   src0=%SrcD src0Type=0 \
+                                                                        src1=%SrcL src1Type=0 \
+                                                                        src2=%SrcR src2Type=0 \
+                                                                        srcRType=%SrcRType \
+                                                                        srcRIndex=2
+
+
+@store_imm      ....... ..... ..... ... ..... ... ... .     &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        src2Type=1
+
+@multi          ....... ..... ..... ... ..... ... ... .     &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@CSEL           ..... .. ..... ..... ... ..... ... ... .    &InstInfo   src0=%SrcP src0Type=0 \
+                                                                        src1=%SrcL src1Type=0 \
+                                                                        src2=%SrcR src2Type=0 \
+                                                                        srcRType=%SrcRType srcRIndex=2 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@one_src        ...... ...... ..... ... ..... ... ... .     &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%imms_inc src1Type=2 \
+                                                                        src2=%imml src2Type=2 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@fpa            ..... .. ..... ..... ... ..... ... ... .    &InstInfo   srcType=%SrcType \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@fpa2           ..... .. ..... ..... ... ..... ... ... .    &InstInfo   srcType=%SrcType \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        src2=%SrcD src2Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@fpc            ..... .. ..... ..... ... ..... ... ... .    &InstInfo   srcType=%SrcType \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@fpa3           ..... .. ..... ..... ... ..... ... ... .    &InstInfo   srcType=%SrcType \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@max_min        ..... .. ..... ..... ... ..... ... ... .    &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@fmax_fmin      ..... .. ..... ..... ... ..... ... ... .    &InstInfo   srcType=%SrcType \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@exec_ctrl      .... .... .... ..... ... ..... ... ... .    &InstInfo   src0=%SrcL src0Type=0
+
+@FENCE_D        .... .... .... ..... ... ..... ... ... .    &InstInfo   src0=%SUCC_IMM src0Type=2 \
+                                                                        src1=%PRED_IMM src1Type=2 \
+                                                                        src2=%mode_29  src2Type=2
+
+@FENCE_I        .... .... .... ..... ... ..... ... ... .    &InstInfo
+
+@acrc           .... .... .... ..... ... ..... ... ... .    &InstInfo   src0=%request_type src0Type=2
+
+@acre           .... .... .... ..... ... ..... ... ... .    &InstInfo   src0=%request_type src0Type=2
+
+@lr             .... . . . ..... ..... ... ..... ... ... .  &InstInfo   aq=%aq rl=%rl far=%far \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        src1=0 src1Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@sc             .... . . . ..... ..... ... ..... ... ... .  &InstInfo   aq=%aq rl=%rl far=%far \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@sc_2           .... . . . ..... ..... ... ..... ... ... .  &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        dst0=%SrcR dst0Type=0
+# 这里用dst来接收SrcR，是为了适配AtomicAaccelssMemory接口
+
+@atomic_ld      .... . . . ..... ..... ... ..... ... ... .  &InstInfo   aq=%aq rl=%rl far=%far \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@atomic_st      .... . . . ..... ..... ... ..... ... ... .  &InstInfo   aq=0 rl=%rl far=%far \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        dst0=0 dst0Type=0
+
+@CVT            ..... .. ..... ..... ... ..... ... ... .    &InstInfo   dstType=%DstType_cvt \
+                                                                        srcType=%SrcType_cvt \
+                                                                        src0=%SrcL src0Type=0 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@LoadSymbol     ................. ... ..... ... ... .       &InstInfo   src0=%simm_15_31 src0Type=1 \
+                                                                        dst0=%RegDst dst0Type=0
+
+@StoreSymbol    ............ ..... ... ..... ... ... .      &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%simm_7_11_and_20_31 src1Type=1
+
+@branch         ....... ..... ..... ... ..... ... ... .     &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=%SrcR src1Type=0 \
+                                                                        src2=%simm_7_11_and_25_31_shift1 src2Type=1
+
+@JR             ....... ..... ..... ... ..... ... ... .     &InstInfo   src0=%SrcL src0Type=0 \
+                                                                        src1=0 src1Type=0 \
+                                                                        src2=%simm_7_11_and_25_31_shift1 src2Type=1
+
+@J              ................. ... ..... ... ... .       &InstInfo   src0=%simm_7_11_and_15_31_shift1 src0Type=1
+
+@Cache_SRC      .... .... .... ..... ... ..... ... ... .    &InstInfo   src0=%SrcL
+
+@Cache_NOSRC    .... .... .... ..... ... ..... ... ... .    &InstInfo
+
+@BSTART           ................. ... ..... ... ... .       &InstInfo  isBinst=4  src0=%BlockType_7_11 src0Type=2 \
+                                                                         src1=%BrType_12_14 src1Type=2 \
+                                                                         src2=%simm_15_31_shift1 src2Type=1
+@BSTART_BRANCH    ......................... ... ... .         &InstInfo  isBinst=4  src0=%simm_7_31_shift1 src0Type=1
+@B_TEXT           ......................... ... ... .         &InstInfo  isBinst=4  src0=%simm_7_31_shift1 src0Type=1
+@B_IOR            ..... .. ..... ..... ... ..... ... ... .    &InstInfo  isBinst=4  src0=%regSrc0  src0Type=0 \
+                                                                         src1=%regSrc1 src1Type=0 \
+                                                                         src2=%regSrc2 src2Type=0 \
+                                                                         dst0=%regDst dst0Type=0
+@B_IOD            ..... .. ..... ..... ... ..... ... ... .    &InstInfo  isBinst=4  src0=%regSrc0  src0Type=2 \
+                                                                         src1=%regSrc1 src1Type=2 \
+                                                                         src2=%regSrc2 src2Type=2 \
+                                                                         dst0=%regDst dst0Type=0
+@B_IOT            ...... ...... . .... ... . . ... ... ... .  &InstInfo  isBinst=4 s0R=%s0R s1R=%s1R last=%last \
+                                                                         tileFunc=%tileFunc \
+                                                                         src0=%uimm_15_18 src0Type=2 \
+                                                                         src1=%srcTile0 src1Type=4 \
+                                                                         src2=%srcTile1 src2Type=4 \
+                                                                         dst0=%dstTile  dst0Type=1
+@B_DIM            ............ ..... ... ..... ... ... .      &InstInfo  isBinst=4  src0=%uimm_12_14 src0Type=2 \
+                                                                         src1=%regSrc0 src1Type=0 \
+                                                                         src2=%uimm_7_11_and_20_31 src2Type=2 \
+
+@MEMTEMPLATE      ..... .. ..... ..... ... ..... ... ... .    &InstInfo  isBinst=4  src0=%regSrc0 src0Type=0 src1=%regSrc1 src1Type=0 src2=%regSrc2 src2Type=0
+@FPTEMPLATE       ....... ..... ..... ... ..... ... ... .     &InstInfo  isBinst=4  src0=%uimm_7_11_and_25_31_shift3 src0Type=2 src1=%regSrc0 src1Type=2 src2=%regSrc1 src2Type=2
+@B_CATR           ..... . . ..... . . . . . ... ..... ... ... . &InstInfo isBinst=4 \
+                                                                          src0=%rl_15 src0Type=2 \
+                                                                          src1=%aq_16 src1Type=2 \
+                                                                          src2=%atom_17 src2Type=2 \
+                                                                          src3=%far_18 src3Type=2 \
+                                                                          src4=%trap_19 src4Type=2 \
+                                                                          src5=%DR src5Type=2
+@B_DATR           ... .. . . ..... . . ... ... ..... ... ... .  &InstInfo isBinst=4 \
+                                                                          src0=%LayOut src0Type=2 \
+                                                                          src1=%RMode src1Type=2 \
+                                                                          src2=%dstType_20_25 src2Type=2 \
+                                                                          src3=%canon src3Type=2 \
+                                                                          src4=%S src4Type=2 \
+                                                                          src5=%padValue_27_28 src5Type=2 \
+                                                                          src6=%CMode src6Type=2
+@B_HINT_PREFETCH  ............ . .. . . ... ..... ... ... .   &InstInfo   isBinst=4 \
+                                                                          src0=%Jump_Vld src0Type=2 \
+                                                                          src1=%Jump_Flag src1Type=2 \
+                                                                          src2=%Temprature src2Type=2 \
+                                                                          src3=%PreFetch  src3Type=2
+@B_HINT_TRACE     ................ . ... ..... ... ... .      &InstInfo   isBinst=4 \
+                                                                          src0=%begin src0Type=2 \
+                                                                          src1=%reserve src1Type=2
+
+# Arithmetic Operation 32bit
+#  block instruction encoding
+
+MCOPY                ..... 00 ..... ..... 000 00000 011 000 1     @MEMTEMPLATE
+MSET                 ..... 00 ..... ..... 001 00000 011 000 1     @MEMTEMPLATE
+
+{
+  B_IOR                ..... 00 ..... ..... 000 ..... 001 001 1     @B_IOR
+  B_IOD                ..... 00 ..... ..... 001 ..... 001 001 1     @B_IOD
+  B_IOT                ...... ...... . .... ... . . ... 001 001 1   @B_IOT
+}
+
+# MPAR MSEQ TMA TEPL VPAR VESQ CUBE FIXP也归纳在BSTART中, 以BlockType固定为00011区分
+BSTART               ................. ... ..... 000 000 1        @BSTART
+BSTART_DIRECT        ......................... 001 000 1          @BSTART_BRANCH
+BSTART_COND          ......................... 010 000 1          @BSTART_BRANCH
+B_TEXT               ......................... 000 001 1          @B_TEXT
+
+B_CATR               00000 . 0 00000 . . . . . 000 00000 010 001 1 @B_CATR
+B_DATR               ... .. . . ..... 0 0 ... 001 ..... 010 001 1  @B_DATR
+
+B_DIM            ............ ........ ..... 100 001 1       @B_DIM
+
+B_HINT_PREFETCH      ............ 0 .. . . 000 00000 011 001 1    @B_HINT_PREFETCH
+B_HINT_TRACE         ................ . 001 00000 011 001 1       @B_HINT_TRACE
+
+FENTRY               ....... ..... ..... 000 ..... 100 000 1      @FPTEMPLATE
+FEXIT                ....... ..... ..... 001 ..... 100 000 1      @FPTEMPLATE
+FRET_RA              ....... ..... ..... 010 ..... 100 000 1      @FPTEMPLATE
+FRET_STK             ....... ..... ..... 011 ..... 100 000 1      @FPTEMPLATE
+
+#  micro instruction encoding
+ADD             ..... .. ..... ..... 000 ..... 000 010 1     @arith
+SUB             ..... .. ..... ..... 001 ..... 000 010 1     @arith
+AND             ..... .. ..... ..... 010 ..... 000 010 1     @arith
+OR              ..... .. ..... ..... 011 ..... 000 010 1     @arith
+XOR             ..... .. ..... ..... 100 ..... 000 010 1     @arith
+SRL             00000 00 ..... ..... 101 ..... 000 010 1     @shift
+SRA             00000 00 ..... ..... 110 ..... 000 010 1     @shift
+SLL             00000 00 ..... ..... 111 ..... 000 010 1     @shift
+
+ADDI            ............ ..... 000 ..... 001 010 1       @arith_ui
+SUBI            ............ ..... 001 ..... 001 010 1       @arith_ui
+ANDI            ............ ..... 010 ..... 001 010 1       @arith_si  src1=%simm_20_31
+ORI             ............ ..... 011 ..... 001 010 1       @arith_si  src1=%simm_20_31
+XORI            ............ ..... 100 ..... 001 010 1       @arith_si  src1=%simm_20_31
+SRLI            000000 ...... ..... 101 ..... 001 010 1      @shift_i
+SRAI            000000 ...... ..... 110 ..... 001 010 1      @shift_i
+SLLI            000000 ...... ..... 111 ..... 001 010 1      @shift_i
+
+# Arithmetic Operation 32bit
+ADDW            ..... .. ..... ..... 000 ..... 010 010 1     @arith
+SUBW            ..... .. ..... ..... 001 ..... 010 010 1     @arith
+ANDW            ..... .. ..... ..... 010 ..... 010 010 1     @arith
+ORW             ..... .. ..... ..... 011 ..... 010 010 1     @arith
+XORW            ..... .. ..... ..... 100 ..... 010 010 1     @arith
+SRLW            00000 00 ..... ..... 101 ..... 010 010 1     @shift
+SRAW            00000 00 ..... ..... 110 ..... 010 010 1     @shift
+SLLW            00000 00 ..... ..... 111 ..... 010 010 1     @shift
+
+ADDIW           ............ ..... 000 ..... 011 010 1       @arith_ui
+SUBIW           ............ ..... 001 ..... 011 010 1       @arith_ui
+ANDIW           ............ ..... 010 ..... 011 010 1       @arith_si  src1=%simm_20_31
+ORIW            ............ ..... 011 ..... 011 010 1       @arith_si  src1=%simm_20_31
+XORIW           ............ ..... 100 ..... 011 010 1       @arith_si  src1=%simm_20_31
+SRLIW           0000000 ..... ..... 101 ..... 011 010 1      @shift_i_w
+SRAIW           0000000 ..... ..... 110 ..... 011 010 1      @shift_i_w
+SLLIW           0000000 ..... ..... 111 ..... 011 010 1      @shift_i_w
+
+# Compare Instruction
+CMP_EQ          00000 .. ..... ..... 000 ..... 100 010 1     @compare
+CMP_NE          00000 .. ..... ..... 001 ..... 100 010 1     @compare
+CMP_AND         00000 .. ..... ..... 010 ..... 100 010 1     @compare
+CMP_OR          00000 .. ..... ..... 011 ..... 100 010 1     @compare
+CMP_LT          00000 .. ..... ..... 100 ..... 100 010 1     @compare
+CMP_GE          00000 .. ..... ..... 101 ..... 100 010 1     @compare
+CMP_LTU         00000 .. ..... ..... 110 ..... 100 010 1     @compare
+CMP_GEU         00000 .. ..... ..... 111 ..... 100 010 1     @compare
+
+CMP_EQI         ............ ..... 000 ..... 101 010 1       @arith_si  src1=%simm_20_31
+CMP_NEI         ............ ..... 001 ..... 101 010 1       @arith_si  src1=%simm_20_31
+CMP_ANDI        ............ ..... 010 ..... 101 010 1       @arith_si  src1=%simm_20_31
+CMP_ORI         ............ ..... 011 ..... 101 010 1       @arith_si  src1=%simm_20_31
+CMP_LTI         ............ ..... 100 ..... 101 010 1       @arith_si  src1=%simm_20_31
+CMP_GEI         ............ ..... 101 ..... 101 010 1       @arith_si  src1=%simm_20_31
+CMP_LTUI        ............ ..... 110 ..... 101 010 1       @arith_ui
+CMP_GEUI        ............ ..... 111 ..... 101 010 1       @arith_ui
+
+# SETC
+SETC_EQ         00000 .. ..... ..... 000 00000 110 010 1     @setc
+SETC_NE         00000 .. ..... ..... 001 00000 110 010 1     @setc
+SETC_AND        00000 .. ..... ..... 010 00000 110 010 1     @setc
+SETC_OR         00000 .. ..... ..... 011 00000 110 010 1     @setc
+SETC_LT         00000 .. ..... ..... 100 00000 110 010 1     @setc
+SETC_GE         00000 .. ..... ..... 101 00000 110 010 1     @setc
+SETC_LTU        00000 .. ..... ..... 110 00000 110 010 1     @setc
+SETC_GEU        00000 .. ..... ..... 111 00000 110 010 1     @setc
+
+SETC_EQI        ............ ..... 000 ..... 111 010 1       @setc_si
+SETC_NEI        ............ ..... 001 ..... 111 010 1       @setc_si
+SETC_ANDI       ............ ..... 010 ..... 111 010 1       @setc_si
+SETC_ORI        ............ ..... 011 ..... 111 010 1       @setc_si
+SETC_LTI        ............ ..... 100 ..... 111 010 1       @setc_si
+SETC_GEI        ............ ..... 101 ..... 111 010 1       @setc_si
+SETC_LTUI       ............ ..... 110 ..... 111 010 1       @setc_ui
+SETC_GEUI       ............ ..... 111 ..... 111 010 1       @setc_ui
+
+# Bit Operation
+BXS             ...... ...... ..... 000 ..... 110 011 1      @bo
+BXU             ...... ...... ..... 001 ..... 110 011 1      @bo
+BIC             ...... ...... ..... 010 ..... 110 011 1      @bo
+BIS             ...... ...... ..... 011 ..... 110 011 1      @bo
+
+# Multi-Cycle ALU
+MUL             00000 00 ..... ..... 000 ..... 100 011 1     @shift
+MULU            00000 00 ..... ..... 001 ..... 100 011 1     @shift
+MULW            00000 00 ..... ..... 010 ..... 100 011 1     @shift
+MULUW           00000 00 ..... ..... 011 ..... 100 011 1     @shift
+MADD            ..... 00 ..... ..... 110 ..... 100 011 1     @MADD
+MADDW           ..... 00 ..... ..... 111 ..... 100 011 1     @MADD
+
+# Constant
+{
+  SETRET          .................... 01010 000 011 1         @SETRET
+  ADDTPC          .................... ..... 000 011 1         @constant
+}
+LUI             .................... ..... 001 011 1         @constant
+
+# Load Register Offset
+LB              ..... .. ..... ..... 000 ..... 000 100 1     @arith
+LH              ..... .. ..... ..... 001 ..... 000 100 1     @arith
+LW              ..... .. ..... ..... 010 ..... 000 100 1     @arith
+LD              ..... .. ..... ..... 011 ..... 000 100 1     @arith
+LBU             ..... .. ..... ..... 100 ..... 000 100 1     @arith
+LHU             ..... .. ..... ..... 101 ..... 000 100 1     @arith
+LWU             ..... .. ..... ..... 110 ..... 000 100 1     @arith
+
+# Load Immediate Offset
+LBI             ............ ..... 000 ..... 001 100 1       @arith_si  src1=%simm_20_31
+LHI             ............ ..... 001 ..... 001 100 1       @arith_si  src1=%simm_20_31_shift1
+LWI             ............ ..... 010 ..... 001 100 1       @arith_si  src1=%simm_20_31_shift2
+LDI             ............ ..... 011 ..... 001 100 1       @arith_si  src1=%simm_20_31_shift3
+LBUI            ............ ..... 100 ..... 001 100 1       @arith_si  src1=%simm_20_31
+LHUI            ............ ..... 101 ..... 001 100 1       @arith_si  src1=%simm_20_31_shift1
+LWUI            ............ ..... 110 ..... 001 100 1       @arith_si  src1=%simm_20_31_shift2
+
+# Load Instruction UnScaled
+LHI_U           ............ ..... 001 ..... 010 100 1       @arith_si  src1=%simm_20_31
+LWI_U           ............ ..... 010 ..... 010 100 1       @arith_si  src1=%simm_20_31
+LDI_U           ............ ..... 011 ..... 010 100 1       @arith_si  src1=%simm_20_31
+LHUI_U          ............ ..... 101 ..... 010 100 1       @arith_si  src1=%simm_20_31
+LWUI_U          ............ ..... 110 ..... 010 100 1       @arith_si  src1=%simm_20_31
+
+# Store Instruction
+SB              ..... .. ..... ..... 000 00000 100 100 1     @store
+SH              ..... .. ..... ..... 001 00000 100 100 1     @store src2Shamt=1
+SW              ..... .. ..... ..... 010 00000 100 100 1     @store src2Shamt=2
+SD              ..... .. ..... ..... 011 00000 100 100 1     @store src2Shamt=3
+SH_U            ..... .. ..... ..... 101 00000 100 100 1     @store
+SW_U            ..... .. ..... ..... 110 00000 100 100 1     @store
+SD_U            ..... .. ..... ..... 111 00000 100 100 1     @store
+
+SBI             ....... ..... ..... 000 ..... 101 100 1      @store_imm  src2=%simm_7_11_and_25_31
+SHI             ....... ..... ..... 001 ..... 101 100 1      @store_imm  src2=%simm_7_11_and_25_31_shift1
+SWI             ....... ..... ..... 010 ..... 101 100 1      @store_imm  src2=%simm_7_11_and_25_31_shift2
+SDI             ....... ..... ..... 011 ..... 101 100 1      @store_imm  src2=%simm_7_11_and_25_31_shift3
+SHI_U           ....... ..... ..... 101 ..... 101 100 1      @store_imm  src2=%simm_7_11_and_25_31
+SWI_U           ....... ..... ..... 110 ..... 101 100 1      @store_imm  src2=%simm_7_11_and_25_31
+SDI_U           ....... ..... ..... 111 ..... 101 100 1      @store_imm  src2=%simm_7_11_and_25_31
+
+# Multi-Cycle ALU
+DIV           0000000 ..... ..... 000 ..... 101 011 1    @multi
+DIVU          0000000 ..... ..... 001 ..... 101 011 1    @multi
+DIVW          0000000 ..... ..... 010 ..... 101 011 1    @multi
+DIVUW         0000000 ..... ..... 011 ..... 101 011 1    @multi
+REM           0000000 ..... ..... 100 ..... 101 011 1    @multi
+REMU          0000000 ..... ..... 101 ..... 101 011 1    @multi
+REMW          0000000 ..... ..... 110 ..... 101 011 1    @multi
+REMUW         0000000 ..... ..... 111 ..... 101 011 1    @multi
+
+
+{
+  ISB             0001 0000 0000 00000 010 00000 010 101 1     @FENCE_I
+
+  BC_IALL         0000 0000 0001 00000 100 00000 010 101 1     @Cache_NOSRC
+  IC_IALL         0000 0000 0001 00000 101 00000 010 101 1     @Cache_NOSRC
+  DC_IALL         0000 0000 0001 00000 110 00000 010 101 1     @Cache_NOSRC
+  TLB_IALL        0000 0000 0011 00000 111 00000 010 101 1     @Cache_NOSRC
+
+  BSE             0000 0000 0000 ..... 000 00000 010 101 1     @exec_ctrl
+  BWE             0000 0000 0001 ..... 000 00000 010 101 1     @exec_ctrl
+  BWI             0000 0000 0010 ..... 000 00000 010 101 1     @exec_ctrl
+  ASSERT          0000 0000 0000 ..... 001 00000 010 101 1     @exec_ctrl
+
+  BC_IVA          0000 0000 0000 ..... 100 00000 010 101 1     @Cache_SRC
+  IC_IVA          0000 0000 0000 ..... 101 00000 010 101 1     @Cache_SRC
+  DC_IVA          0000 0000 0000 ..... 110 00000 010 101 1     @Cache_SRC
+  DC_CVA          0000 0000 0010 ..... 110 00000 010 101 1     @Cache_SRC
+  DC_CIVA         0000 0000 0011 ..... 110 00000 010 101 1     @Cache_SRC
+  DC_ISW          0000 0000 0100 ..... 110 00000 010 101 1     @Cache_SRC
+  DC_CSW          0000 0000 0101 ..... 110 00000 010 101 1     @Cache_SRC
+  DC_CISW         0000 0000 0110 ..... 110 00000 010 101 1     @Cache_SRC
+  DC_ZVA          0000 0000 0111 ..... 110 00000 010 101 1     @Cache_SRC
+  TLB_IA          0000 0000 0000 ..... 111 00000 010 101 1     @Cache_SRC
+  TLB_IV          0000 0000 0010 ..... 111 00000 010 101 1     @Cache_SRC
+  TLB_IAV         0000 0000 0011 ..... 111 00000 010 101 1     @Cache_SRC
+
+  SETC_TGT        000000000000 ..... 100 00000 011 101 1       @SETC_TGT
+
+  ACRC            0000 0000 .... 00000 011 00000 010 101 1     @acrc
+  ACRE            0000 0001 .... 00000 011 00000 010 101 1     @acre
+
+  DMA             0000 0 0 0 ..... ..... 111 00000 000 101 1   @sc_2
+
+  MAX             00000 00 ..... ..... 100 ..... 101 101 1     @max_min
+  MAXU            00001 00 ..... ..... 100 ..... 101 101 1     @max_min
+  MIN             00000 00 ..... ..... 101 ..... 101 101 1     @max_min
+  MINU            00001 00 ..... ..... 101 ..... 101 101 1     @max_min
+
+  FABS            00000 .. 00000 ..... 000 ..... 111 101 1     @fpa3
+  FSQRT           00000 .. 00000 ..... 001 ..... 111 101 1     @fpa3
+  FEXP            00000 .. 00000 ..... 010 ..... 111 101 1     @fpa3
+  FRECIP          00000 .. 00000 ..... 110 ..... 111 101 1     @fpa3
+
+  FMAX            00000 .. ..... ..... 110 ..... 101 101 1     @fmax_fmin
+  FMIN            00000 .. ..... ..... 111 ..... 101 101 1     @fmax_fmin
+
+  FADD            00000 .. ..... ..... 000 ..... 100 101 1     @fpa
+  FSUB            00000 .. ..... ..... 001 ..... 100 101 1     @fpa
+  FMUL            00000 .. ..... ..... 010 ..... 100 101 1     @fpa
+  FDIV            00000 .. ..... ..... 011 ..... 100 101 1     @fpa
+
+  FEQ             00000 .. ..... ..... 000 ..... 101 101 1     @fpc
+  FNE             00000 .. ..... ..... 001 ..... 101 101 1     @fpc
+  FLT             00000 .. ..... ..... 010 ..... 101 101 1     @fpc
+  FGE             00000 .. ..... ..... 011 ..... 101 101 1     @fpc
+  FEQS            00001 .. ..... ..... 000 ..... 101 101 1     @fpc
+  FNES            00001 .. ..... ..... 001 ..... 101 101 1     @fpc
+  FLTS            00001 .. ..... ..... 010 ..... 101 101 1     @fpc
+  FGES            00001 .. ..... ..... 011 ..... 101 101 1     @fpc
+
+  SW_ADD          0000 . 0 . ..... ..... 011 00000 000 101 1   @atomic_st
+  SW_AND          0001 . 0 . ..... ..... 011 00000 000 101 1   @atomic_st
+  SW_OR           0010 . 0 . ..... ..... 011 00000 000 101 1   @atomic_st
+  SW_XOR          0011 . 0 . ..... ..... 011 00000 000 101 1   @atomic_st
+  SW_SMAX         0100 . 0 . ..... ..... 011 00000 000 101 1   @atomic_st
+  SW_SMIN         0101 . 0 . ..... ..... 011 00000 000 101 1   @atomic_st
+  SW_UMAX         0110 . 0 . ..... ..... 011 00000 000 101 1   @atomic_st
+  SW_UMIN         0111 . 0 . ..... ..... 011 00000 000 101 1   @atomic_st
+  SD_ADD          0000 . 0 . ..... ..... 101 00000 000 101 1   @atomic_st
+  SD_AND          0001 . 0 . ..... ..... 101 00000 000 101 1   @atomic_st
+  SD_OR           0010 . 0 . ..... ..... 101 00000 000 101 1   @atomic_st
+  SD_XOR          0011 . 0 . ..... ..... 101 00000 000 101 1   @atomic_st
+  SD_SMAX         0100 . 0 . ..... ..... 101 00000 000 101 1   @atomic_st
+  SD_SMIN         0101 . 0 . ..... ..... 101 00000 000 101 1   @atomic_st
+  SD_UMAX         0110 . 0 . ..... ..... 101 00000 000 101 1   @atomic_st
+  SD_UMIN         0111 . 0 . ..... ..... 101 00000 000 101 1   @atomic_st
+
+  LR_B            0000 . . . 00000 ..... 000 ..... 000 101 1   @lr
+  LR_H            0001 . . . 00000 ..... 000 ..... 000 101 1   @lr
+  LR_W            0010 . . . 00000 ..... 000 ..... 000 101 1   @lr
+  LR_D            0011 . . . 00000 ..... 000 ..... 000 101 1   @lr
+
+  SC_B            0000 . . . ..... ..... 001 ..... 000 101 1   @sc
+  SC_H            0001 . . . ..... ..... 001 ..... 000 101 1   @sc
+  SC_W            0010 . . . ..... ..... 001 ..... 000 101 1   @sc
+  SC_D            0011 . . . ..... ..... 001 ..... 000 101 1   @sc
+
+  LW_ADD          0000 . . . ..... ..... 010 ..... 000 101 1   @atomic_ld
+  LW_AND          0001 . . . ..... ..... 010 ..... 000 101 1   @atomic_ld
+  LW_OR           0010 . . . ..... ..... 010 ..... 000 101 1   @atomic_ld
+  LW_XOR          0011 . . . ..... ..... 010 ..... 000 101 1   @atomic_ld
+  LW_SMAX         0100 . . . ..... ..... 010 ..... 000 101 1   @atomic_ld
+  LW_SMIN         0101 . . . ..... ..... 010 ..... 000 101 1   @atomic_ld
+  LW_UMAX         0110 . . . ..... ..... 010 ..... 000 101 1   @atomic_ld
+  LW_UMIN         0111 . . . ..... ..... 010 ..... 000 101 1   @atomic_ld
+  LD_ADD          0000 . . . ..... ..... 100 ..... 000 101 1   @atomic_ld
+  LD_AND          0001 . . . ..... ..... 100 ..... 000 101 1   @atomic_ld
+  LD_OR           0010 . . . ..... ..... 100 ..... 000 101 1   @atomic_ld
+  LD_XOR          0011 . . . ..... ..... 100 ..... 000 101 1   @atomic_ld
+  LD_SMAX         0100 . . . ..... ..... 100 ..... 000 101 1   @atomic_ld
+  LD_SMIN         0101 . . . ..... ..... 100 ..... 000 101 1   @atomic_ld
+  LD_UMAX         0110 . . . ..... ..... 100 ..... 000 101 1   @atomic_ld
+  LD_UMIN         0111 . . . ..... ..... 100 ..... 000 101 1   @atomic_ld
+
+  SWAPB           0000 . . . ..... ..... 110 ..... 000 101 1   @sc
+  SWAPH           0001 . . . ..... ..... 110 ..... 000 101 1   @sc
+  SWAPW           0010 . . . ..... ..... 110 ..... 000 101 1   @sc
+  SWAPD           0011 . . . ..... ..... 110 ..... 000 101 1   @sc
+
+  DSB             00 . 0 .... .... 00000 010 00000 010 101 1   @FENCE_D
+
+  FCVT            ..... .. 00000 ..... 000 ..... 110 101 1     @CVT
+  FCVTA           ..... .. 00000 ..... 001 ..... 110 101 1     @CVT
+  FCVTM           ..... .. 00000 ..... 010 ..... 110 101 1     @CVT
+  FCVTN           ..... .. 00000 ..... 011 ..... 110 101 1     @CVT
+  FCVTP           ..... .. 00000 ..... 100 ..... 110 101 1     @CVT
+  FCVTZ           ..... .. 00000 ..... 101 ..... 110 101 1     @CVT
+  SCVTF           ..... .. 00000 ..... 110 ..... 110 101 1     @CVT
+  UCVTF           ..... .. 00000 ..... 111 ..... 110 101 1     @CVT
+
+  SSRGET          ............ 00000 000 ..... 011 101 1       @SSRGET
+
+  FMADD           ..... .. ..... ..... 100 ..... 100 101 1     @fpa2
+  FMSUB           ..... .. ..... ..... 101 ..... 100 101 1     @fpa2
+  FNMADD          ..... .. ..... ..... 110 ..... 100 101 1     @fpa2
+  FNMSUB          ..... .. ..... ..... 111 ..... 100 101 1     @fpa2
+
+  SSRSET          ............ ..... 001 00000 011 101 1       @SSRSET
+
+  # ssrrd           ............ ..... 000 ..... 0000 1 1 1     @ssrrd
+  # ssrwr           ............ ..... 000 ..... 0001 1 1 1     @ssrwr
+}
+
+# Three Source Integer
+CSEL            ..... .. ..... ..... 000 ..... 111 011 1     @CSEL
+
+CTZ             ...... ...... ..... 100 ..... 110 011 1      @bo
+CLZ             ...... ...... ..... 101 ..... 110 011 1      @bo
+BCNT            ...... ...... ..... 110 ..... 110 011 1      @bo
+REV             ...... ...... ..... 111 ..... 110 011 1      @one_src
+
+
+
+#Load Symbol
+LB_PCR          ................. 000 ..... 011 100 1        @LoadSymbol
+LH_PCR          ................. 001 ..... 011 100 1        @LoadSymbol
+LW_PCR          ................. 010 ..... 011 100 1        @LoadSymbol
+LD_PCR          ................. 011 ..... 011 100 1        @LoadSymbol
+LBU_PCR         ................. 100 ..... 011 100 1        @LoadSymbol
+LHU_PCR         ................. 101 ..... 011 100 1        @LoadSymbol
+LWU_PCR         ................. 110 ..... 011 100 1        @LoadSymbol
+
+#Store Symbol
+SB_PCR          ............ ..... 000 ..... 110 100 1       @StoreSymbol
+SH_PCR          ............ ..... 001 ..... 110 100 1       @StoreSymbol
+SW_PCR          ............ ..... 010 ..... 110 100 1       @StoreSymbol
+SD_PCR          ............ ..... 011 ..... 110 100 1       @StoreSymbol
+
+
+# Branch Instruction
+B_EQ            ....... ..... ..... 000 ..... 010 011 1      @branch
+B_NE            ....... ..... ..... 001 ..... 010 011 1      @branch
+B_LT            ....... ..... ..... 010 ..... 010 011 1      @branch
+B_GE            ....... ..... ..... 011 ..... 010 011 1      @branch
+B_LTU           ....... ..... ..... 100 ..... 010 011 1      @branch
+B_GEU           ....... ..... ..... 101 ..... 010 011 1      @branch
+
+JR              ....... 00000 ..... 110 ..... 010 011 1      @JR
+
+J               ................. 000 ..... 011 011 1        @J
+B_Z             ................. 001 ..... 011 011 1        @J
+B_NZ            ................. 010 ..... 011 011 1        @J

@@ -1,0 +1,182 @@
+#include "veclite/VectorLiteUopInfo.h"
+#include "core/Bus.h"
+
+namespace JCore {
+
+using namespace std;
+
+constexpr uint32_t DEFAULT_LATENCY = 5;
+
+VectorLiteUopInfo::VectorLiteUopInfo()
+    : latencyTable({
+        { TileOp::TADD, 4 },
+        { TileOp::TSUB, 4 },
+        { TileOp::TMUL, 4 },
+        { TileOp::TDIV, 6 },
+        { TileOp::TREM, 4 },
+        { TileOp::TFMOD, 4 },
+        { TileOp::TAND, 4 },
+        { TileOp::TOR, 4 },
+        { TileOp::TXOR, 4 },
+        { TileOp::TSHL, 4 },
+        { TileOp::TSHR, 4 },
+        { TileOp::TMAX, 4 },
+        { TileOp::TMIN, 4 },
+        { TileOp::TCMP, 4 },
+        { TileOp::TPRELU, 4 },
+        { TileOp::TABS, 4 },
+        { TileOp::TNOT, 4 },
+        { TileOp::TNEG, 4 },
+        { TileOp::TEXP, 6 },
+        { TileOp::TLOG, 4 },
+        { TileOp::TRECIP, 4 },
+        { TileOp::TSQRT, 4 },
+        { TileOp::TRSQRT, 4 },
+        { TileOp::TRELU, 4 },
+        { TileOp::TADDC, 4 },
+        { TileOp::TSUBC, 4 },
+        { TileOp::TSEL, 4 },
+        { TileOp::TCVT, 3 },
+        { TileOp::TADDS, 4 },
+        { TileOp::TSUBS, 4 },
+        { TileOp::TMULS, 4 },
+        { TileOp::TDIVS, 6 },
+        { TileOp::TREMS, 4 },
+        { TileOp::TFMODS, 4 },
+        { TileOp::TANDS, 4 },
+        { TileOp::TORS, 4 },
+        { TileOp::TXORS, 4 },
+        { TileOp::TSHLS, 4 },
+        { TileOp::TSHRS, 4 },
+        { TileOp::TMAXS, 4 },
+        { TileOp::TMINS, 4 },
+        { TileOp::TCMPS, 4 },
+        { TileOp::TLRELU, 4 },
+        { TileOp::TADDSC, 4 },
+        { TileOp::TSUBSC, 4 },
+        { TileOp::TSELS, 4 },
+        { TileOp::TEXPANDS, 6 },
+        { TileOp::TROWSUM, 4 },
+        { TileOp::TROWMAX, 4 },
+        { TileOp::TROWMIN, 4 },
+        { TileOp::TROWPROD, 4 },
+        { TileOp::TROWEXPAND, 6 },
+        { TileOp::TROWEXPANDADD, 6 },
+        { TileOp::TROWEXPANDSUB, 6 },
+        { TileOp::TROWEXPANDMUL, 6 },
+        { TileOp::TROWEXPANDDIV, 6 },
+        { TileOp::TROWEXPANDMAX, 6 },
+        { TileOp::TROWEXPANDMIN, 6 },
+        { TileOp::TROWEXPANDEXPDIF, 6 },
+        { TileOp::TCOLSUM, 4 },
+        { TileOp::TCOLMAX, 4 },
+        { TileOp::TCOLMIN, 4 },
+        { TileOp::TCOLPROD, 4 },
+        { TileOp::TCOLEXPAND, 6 },
+        { TileOp::TCOLEXPANDADD, 6 },
+        { TileOp::TCOLEXPANDSUB, 6 },
+        { TileOp::TCOLEXPANDMUL, 6 },
+        { TileOp::TCOLEXPANDDIV, 6 },
+        { TileOp::TCOLEXPANDMAX, 6 },
+        { TileOp::TCOLEXPANDMIN, 6 },
+        { TileOp::TCOLEXPANDEXPDIF, 6 },
+        { TileOp::ESAVE, 4 },
+        { TileOp::ERCOV, 4 },
+    }),
+    pipeTable({
+        { TileOp::TADD, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSUB, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TMUL, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TDIV, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TREM, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TFMOD, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TAND, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TOR, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TXOR, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSHL, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSHR, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TMAX, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TMIN, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCMP, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TPRELU, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TABS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TNOT, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TNEG, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TEXP, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TLOG, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TRECIP, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSQRT, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TRSQRT, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TRELU, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TADDC, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSUBC, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSEL, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCVT, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TADDS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSUBS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TMULS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TDIVS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TREMS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TFMODS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TANDS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TORS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TXORS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSHLS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSHRS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TMAXS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TMINS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCMPS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TLRELU, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TADDSC, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSUBSC, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TSELS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TEXPANDS, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWSUM, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWMAX, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWMIN, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWPROD, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWEXPAND, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWEXPANDADD, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWEXPANDSUB, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWEXPANDMUL, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWEXPANDDIV, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWEXPANDMAX, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWEXPANDMIN, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TROWEXPANDEXPDIF, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLSUM, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLMAX, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLMIN, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLPROD, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLEXPAND, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLEXPANDADD, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLEXPANDSUB, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLEXPANDMUL, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLEXPANDDIV, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLEXPANDMAX, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLEXPANDMIN, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::TCOLEXPANDEXPDIF, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::ESAVE, VectorLiteUopInfo::ExePipe::IALU },
+        { TileOp::ERCOV, VectorLiteUopInfo::ExePipe::IALU },
+    })
+{}
+
+
+uint32_t VectorLiteUopInfo::GetLatency(TileOp tileOp)
+{
+    if (latencyTable.find(tileOp) != latencyTable.cend()) {
+        return latencyTable[tileOp];
+    }
+    cout << "[ERROR] Latency not found for TileOp=" << dec << static_cast<uint32_t>(tileOp) << endl;
+    return DEFAULT_LATENCY;
+}
+
+VectorLiteUopInfo::ExePipe VectorLiteUopInfo::GetPipe(TileOp tileOp)
+{
+    if (pipeTable.find(tileOp) != pipeTable.cend()) {
+        return pipeTable[tileOp];
+    }
+    cout << "[ERROR] Pipe not found for TileOp=" << dec << static_cast<uint32_t>(tileOp) << endl;
+    return ExePipe::IALU;
+}
+
+} // namespace JCore

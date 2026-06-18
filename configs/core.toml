@@ -1,0 +1,146 @@
+[Core]
+
+block_rob_depth = 256           #Number of Block ROB entries
+
+stdPeCount = 1                  #Number of Standard PE
+
+
+simtPeCount = 1                 #Number of SIMT PE
+threadCount = 4                 #Number of thread
+stdThreadCount = 1              #Number of thread
+memPeCount = 1                  #Number of memcore PE
+pe_fetch_width = 16             #Number of bytes for PE to fetch per cycle
+soc_enable = false              #Enable true SOC evaluation
+soc_default_latency = 30        #When soc_enable is false, the default soc latency set value
+soc_random = false              #Random latency soc model which soc_enable need be false
+max_rd_crdt = 4096              # max read credit which soc_random need be true
+max_wr_crdt = 4096              # max write credit which soc_random need be true
+read_bandwidth_limit  = 156     # max write credit which soc_random need be true, 13.5T 54core 1.6G
+write_bandwidth_limit = 156     # max write credit which soc_random need be true
+write_latency_diver     = 2500
+read_latency_diver      = 2500
+dbid_latency_diver      = 20
+min_dbid_latency        = 20    # janus no use , accelerator revise to 1
+min_read_latency        = 266
+min_write_latency       = 288
+soc_lat_random_seed     = 1     # 0 for device to pick a random seed, do not use for reproductive test
+
+socFreqConv = true            #Enable SOC <-> Core Frequency Conversion
+
+top_down_enable = false         #Enable TopDown Analysis
+bp_mode = 0                     #Mode 0:-Full BP, Mode 1:Perfect BP, Mode 2: No BP
+pe_replay_enable = false        #Enable nuke-replace option.
+watch_dog_timer = 100000        #Interval to activate watch dog
+load_store_replay = false       #Enable load-store replay option.
+ggpr_count  = 128               #Number of global/local physical registers
+ggpr_mapq_depth = 256
+vec_lpreg_count = 256           #Number of local physical registers for vector
+mtc_lpreg_count = 256           #Number of local physical registers for mtc
+local_reg_count = 256           #Number of local physical registers
+local_reg_t = 192               #Number of local physical registers
+local_reg_u = 64                #Number of local physical registers
+simt_local_reg_t = 512          #Number of local physical registers(Scalar)
+simt_local_reg_u = 512          #Number of local physical registers(Scalar)
+vrf_mapq_depth = 128            #Rename mapq depth for vt/ut/mt/nt
+vrf_preg_count = 108            #Number of phsical registers for vt/ut/mt/nt
+vrf_release_mode = 0            #Release mode of VRF. 0:Commit, 1:Resolve, 2:SrcRd(I1), 3:P1
+vrf_reuse_src_kill_reg = 0      #Directly allocate src.kill to dst. 0:Disable, 1:regUsingCnt, 2:regReadCnt
+scalar_local_reg_width = 64     #Reg width in bits
+simt_local_reg_width = 2048     #Reg width in bits
+simt_local_reg_p = 512          #Number of local physical registers(Predicate)
+
+mtcThreadCount = 4              #Number of MTC thread
+mtc_local_reg_t = 512           #Number of local physical registers(Scalar)
+mtc_local_reg_u = 512           #Number of local physical registers(Scalar)
+mtc_local_reg_width = 2048      #Reg width in bits
+mtc_local_reg_p = 512           #Number of local physical registers(Predicate)
+mtc_core_num=1
+mtc_thread_num=1
+mtccore_lsu_num = 1
+
+mtc_tls_enable = false
+mtc_tload_retire_in_order = false
+mtc_separate_enable = false
+scalper_enable = false
+write_scb_entry_size = 256
+mtc_wait_ring_rsp = true
+scalper_size = 512
+scalper_send_pause_time = 6
+fake_tcopy_execute_lat = 200
+mtc_prefetch_enable = false
+
+ptag_stall_enable = false       #Enable ptag stall for PE rename
+perfect_load_store = false      #Perfect load/store mode with address dependent
+perfect_get_set = false         #Perfect get/set mode with reference data bypass
+BSB_enable = false              #Enable sliding window
+
+pipeview_specify_pe_enable = false #Enalbe pipeview print specify pe's log
+pipeview_specify_pe_id = 0      #The specify pe's ID
+
+ca_light_core = false           #Enable for parameter of ca light core
+light_core_enable = false        #Enable for parameter of ca light core(inly for parameter)
+load_to_use_enable=true         #Switch for load-to-use.
+parallel_decode = false         #true: mode of parallel decode; false: decode block inorder of BROB
+zero_one_reg_enable = false     #Support zero/one register for special instrucitons.
+reno_static_enable = false     #Rename-based static optimizition enable
+reno_dynamic_enable = true     #Rename-based dynamic optimizition enable
+simtLane = 64                   #Lanes for simt executing
+simtEnable=true               #Switch for SIMT
+legalCheckEnable=true          #enable legalcheck
+legalCheckOnlyPC=false          #legalcheck only check bpc and tpc
+
+cube_core_num=1
+cube_thread_num=1
+ttrans_core_num=1
+ttrans_thread_num=1
+vector_core_num=1
+vector_thread_num=1
+
+scalar_lsu_num = 1
+vector_lsu_num = 1
+deadlock_cycles = 4000                # dead lock detect cycles
+long_deadlock_cycles = 20000
+flushVerbose = false            #VerboseSwitch of flush_uint
+enable_cmd_isq = true           #Use cmd_isq for B.IOR/B.IOT/B.IOTI/B.DIM/B.TEXT
+enable_acc_rename = true        #Assign cube tileop to different ACC chain
+
+maxWidthBitsPerLane = 32            # The maximum data width of each lane
+
+tileBridge = true                   # Enable the tile bridge
+tileBridgeNum = 1                   # Num of tile bridge
+ruminateEnable = false
+tauStartId = 1
+
+input_reg_num = 4
+output_reg_num = 4
+
+dump_inst_trace = false         #dump rob inst
+scalar_lsu_load_windows=64
+scalar_lsu_store_windows=256
+
+vec_bridge_latency = 4
+# VSCATTER stub configuration
+debug_stub_vec_ring_enable = false          # Enable VEC Ring stub (方案A: normal Ring flow)
+debug_stub_vscatter_plan3_enable = false     # Enable VSCATTER stub plan3 (CHIFlit packing/unpacking with internal short-circuit)
+
+singleTierMode = false          #enable vector-lite
+perfectAaccelssRF = false
+cubeReadOccTileregLat = 2
+cubeWriteOccTileregLat = 1
+tmaReadOccTileregLat = 1
+tmaWriteOccTileregLat = 2
+vecWriteOccTileregLat = 1
+
+cube_credit_per_acc = 4         #Credit from each bisq acc chain to cube.
+vector_credit = 4               #Credit from bisq to vectorcore.
+load_ooo_enable = true          # Switch for load OOO.
+
+print_histogram = false         #Enable histogram pmu print
+hint_warmup_enable = false      #Enable hint(B.HINT TRACE.begin) warmup
+mtc_lsu_load_windows=256
+mtc_lsu_store_windows=256
+
+mcallGroupSchedulerDepth = 64
+
+debug_with_status_enable = true #debug log print brob status by cycle
+scalar_smt_thread = 1

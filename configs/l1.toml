@@ -1,0 +1,19 @@
+[L1]
+
+verbose = false             # Verbose switch
+
+dcache_nset = 256
+dcache_nway = 4
+dcache_way_size = 64
+dcache_min_size = 16384     # Min size of dcache
+dcache_max_size = 65536     # Max size of dcache
+
+scb_depth = 2048            # Number of SCB
+scalar_scb_depth = 128       # Number of SCB
+n_store_dealloc = 2
+
+l1_clts_num = 4
+l1_disp_bit_arr = [6, 7]
+cluster_width = 64
+
+l1d_l2_inclusion_policy = "WI" # "I":inclusive, "WI":weakly-inclusive(Keep consistent with L2)

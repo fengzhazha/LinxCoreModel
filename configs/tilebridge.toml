@@ -1,0 +1,56 @@
+[TileBridge]
+
+GLOBAL_MEMORY_CACHELINE_SIZE = 256
+FRACTAL_ROW_BYTES = 32
+FRACTAL_ROW_NUM = 16
+
+BPQ_SIZE = 40
+BPQ_TSTORE_ONLY_USE_SIZE = 2    # Number of BPQ used only for Tstore
+
+BPQ_DUAL_CHANNEL = true         # Dual-channel for BPQ allows separate handling of Tload and Tstore requests
+BPQ_SEND_READ_NUM = 1           # Number of read requests that can be sent per cycle
+BPQ_SEND_WRITE_NUM = 1          # Number of write requests that can be sent per cycle
+BPQ_SEND_TLOAD_READ_NUM = 1     # Number of Tload read requests that can be sent per cycle
+BPQ_SEND_TLOAD_WRITE_NUM = 1    # Number of Tload write requests that can be sent per cycle
+BPQ_SEND_TSTORE_READ_NUM = 1    # Number of TStore read requests that can be sent per cycle
+BPQ_SEND_TSTORE_WRITE_NUM = 1   # Number of TStore write requests that can be sent per cycle
+
+BPQ_PERFECT_PICK_REQ = false    # Can BPQ perfect pick memory mode req to tag?
+
+SRFB_SEND_READ_NUM = 1          # Number of GM Read can be sent per cycle
+SWCB_SEND_WRITE_NUM = 1         # Number of GM Write can be sent per cycle
+NRFB_SEND_READ_NUM = 1          # Number of TR Read can be sent per cycle
+NWCB_SEND_WRITE_NUM = 1         # Number of TR Write can be sent per cycle
+
+BPQ_MEMORY_MODE_REQ_RETRY_THRESHOLD = 64        # The threshold at which BPQ triggers a retry after attempting to send a request
+
+BRIDGE_DATA_BUFFER_SIZE = 1280                  # Number of Entries in BDB, currentl = Tstore only use + Tload only
+BRIDGE_DATA_BUFFER_TLOAD_ONLY_USE_SIZE = 1024   # Number of Entries in BDB which only can use by Tload, Tcvt and so on
+BRIDGE_DATA_BUFFER_TSTORE_ONLY_USE_SIZE = 256   # Number of Entries in BDB which only can use by Tstore
+BRIDGE_DATA_BUFFER_DATA_SIZE = 128              # Size of Entries in BDB
+
+SRFB_OUTSTANDING_REQ_NUM = 384  # Request capacity that SRFB can handle
+NRFB_OUTSTANDING_REQ_NUM = 32   # Request capacity that NRFB can handle
+SWCB_OUTSTANDING_REQ_NUM = 256  # Request capacity that SWCB can handle
+NWCB_OUTSTANDING_REQ_NUM = 64   # Request capacity that NWCB can handle
+
+NRFB_READ_BANDWIDTH     = 256   # The maximum aaccelss bandwidth of the RING.
+SRFB_READ_BANDWIDTH     = 256   # The maximum aaccelss bandwidth of the SOC.
+
+SWCB_MAX_WRITE_SIZE     = 256   # SWCB maximum size of each write request
+
+ENABLE_SPLIT_ROW_BPQ    = true
+NORM_LAYOUT_SPLIT_ROW_GRANULARITY = 8   # Normal layout granularity used for row splitting
+OTHER_LAYOUT_SPLIT_ROW_GRANULARITY = 32
+FP4_OTHER_LAYOUT_SPLIT_ROW_GRANULARITY = 64
+
+TOP_DOWN_PMU_VERBOSE    = true  # enable the print of top down pmu in TMA Key Stats
+OCCUPANCY_VERBOSE       = true  # enable the print of rfb/bdb/wcb occupancy in TMA Key Stats
+
+CAQ_SIZE = 1000                 # The size of cache aaccelss queue
+MPB_SIZE = 1000                 # The size of memory pre buffer
+
+# fake vgather channel
+debug_vec_bridge_vgather_enable  = false
+fake_vgather_enable = false
+debug_stub_vgather_freq = 100

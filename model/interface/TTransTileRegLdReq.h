@@ -1,0 +1,15 @@
+#ifndef BLOCKISA_MODEL_INTERFACE_TTRANSTILEREGLDREQ_H
+#define BLOCKISA_MODEL_INTERFACE_TTRANSTILEREGLDREQ_H
+
+#include "interface/CubeTileRegLdReq.h"
+
+namespace JCore {
+
+
+// TTRANS_TILEREG_LD_REQ
+typedef CubeTileRegLdReq TTransTileRegLdReq;
+
+
+} // namespace JCore
+
+#endif  // BLOCKISA_MODEL_INTERFACE_TTRANSTILEREGLDREQ_H
