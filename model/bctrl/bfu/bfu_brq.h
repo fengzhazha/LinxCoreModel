@@ -56,6 +56,7 @@ public:
     bool IsOlderThanFront(PtrMachineInst const& h) const;
     bool IsOlderThanFront(seq_t fbid, seq_t fbid_local, uint32_t stid) const;
     std::deque<PtrFB>::iterator getFBByHdr(PtrMachineInst const& h);
+    std::deque<PtrFB>::iterator findFBByFbid(seq_t fbid, seq_t fbid_local, uint32_t stid);
     std::deque<PtrFB>::iterator getFBByFbid(seq_t fbid, seq_t fbid_local, uint32_t stid);
     std::deque<PtrFB>::iterator getGlobalFBByFbid(seq_t fbid, uint32_t stid);
     std::deque<PtrFB>::iterator getBodyEndFBByHdr(PtrMachineInst const& h);

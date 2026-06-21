@@ -195,9 +195,16 @@ bool BRQ::push(PtrFB const& fb) {
     }
 
     if (h && h->bfuInfo->predict_taken && h->bfuInfo->spInfo->bsizeVld && !h->bfuInfo->spInfo->isInst) {
-        PtrFB taken_fb = (*getFBByFbid(h->bfuInfo->fbid, h->bfuInfo->fbid_local, h->stid));
-        pos_t taken_pos = utils->CalcPosInFB(h->GetBundlePosPC(), taken_fb->va);
-        bfu->UpdateUBTB(taken_fb, taken_pos);
+        auto taken_it = findFBByFbid(h->bfuInfo->fbid, h->bfuInfo->fbid_local, h->stid);
+        if (taken_it != brq[h->stid].end()) {
+            PtrFB taken_fb = (*taken_it);
+            pos_t taken_pos = utils->CalcPosInFB(h->GetBundlePosPC(), taken_fb->va);
+            bfu->UpdateUBTB(taken_fb, taken_pos);
+        } else if (cfg->debug_enable) {
+            LOG_INFO_M(Unit::BFU, Stage::F4) << "Skip stale UBTB update, fbid=" << dec
+                << h->bfuInfo->fbid << ", fbid_local=" << h->bfuInfo->fbid_local
+                << ", hid=" << h->bfuInfo->hid << ", pc=0x" << hex << h->GetBundlePosPC();
+        }
     }
     return true;
 }
@@ -274,20 +281,58 @@ bool BRQ::ResolveHeader(PtrMachineInst const& machineInst) {
 }
 
 void BRQ::ReportFlush(seq_t fbid, seq_t fbid_local, uint64_t pc, uint32_t stid) {
-    if (IsOlderThanFront(fbid, fbid_local, stid)) {
+    if (stid >= brq.size() || brq[stid].empty() || IsOlderThanFront(fbid, fbid_local, stid)) {
         if (cfg->debug_enable) {
             LOG_INFO_M(Unit::BFU, Stage::NA) << "Skip stale queued nuke, fbid=" << dec << fbid
                 << ", fbid_local=" << fbid_local << ", stid=" << stid << ", pc=0x" << hex << pc;
         }
         return;
     }
-    auto it = getFBByFbid(fbid, fbid_local, stid);
+    auto it = findFBByFbid(fbid, fbid_local, stid);
+    bool used_fallback = false;
+    if (it == brq[stid].end()) {
+        auto fallback = find_if(brq[stid].rbegin(), brq[stid].rend(), [&](PtrFB& fb) {
+            return fb->fbid == fbid && fb->fbid_local <= fbid_local;
+        });
+        if (fallback != brq[stid].rend()) {
+            it = prev(fallback.base());
+            used_fallback = true;
+            if (cfg->debug_enable) {
+                LOG_INFO_M(Unit::BFU, Stage::NA) << "Use resident FB for queued nuke, requested fbid="
+                    << dec << fbid << ", requested_fbid_local=" << fbid_local
+                    << ", resident_fbid_local=" << (*it)->fbid_local
+                    << ", stid=" << stid << ", pc=0x" << hex << pc;
+            }
+        }
+    }
+    if (it == brq[stid].end()) {
+        if (cfg->debug_enable) {
+            LOG_INFO_M(Unit::BFU, Stage::NA) << "Missing active queued nuke FB, fbid=" << dec << fbid
+                << ", fbid_local=" << fbid_local << ", stid=" << stid << ", pc=0x" << hex << pc
+                << dec << ", brq_front_fbid=" << brq[stid].front()->fbid
+                << ", brq_front_fbid_local=" << brq[stid].front()->fbid_local
+                << ", brq_back_fbid=" << brq[stid].back()->fbid
+                << ", brq_back_fbid_local=" << brq[stid].back()->fbid_local;
+        }
+        cerr << dec << "fbid=" << fbid << " fbid_local=" << fbid_local << " stid=" << stid
+             << " pc=0x" << hex << pc << dec
+             << " brq_front_fbid=" << brq[stid].front()->fbid
+             << " brq_front_fbid_local=" << brq[stid].front()->fbid_local
+             << " brq_back_fbid=" << brq[stid].back()->fbid
+             << " brq_back_fbid_local=" << brq[stid].back()->fbid_local << endl;
+        assert(false && "Missing active queued nuke FB");
+    }
     while (true) {
         PtrFB fb = (*it);
         pos_t pos = fb->main_info.end_pos >= BFU_BANDWIDTH ? BFU_BANDWIDTH - 1 : fb->main_info.end_pos;
         for ( ; pos >= utils->CalcPosInFB(fb->va); --pos) {
             uint64_t cur_pc = utils->CalcPC(fb->va, pos);
-            if (!utils->MhdrInvalid(fb->machineInst[pos]) && pc == utils->NextBlockPC(cur_pc)) {
+            if (!utils->MhdrInvalid(fb->machineInst[pos])) {
+                auto const& sp = fb->machineInst[pos]->bfuInfo->spInfo;
+                uint64_t body_pc = cur_pc + (sp && sp->hsize ? sp->hsize : MIN_BUNDLE_SIZE);
+                if (pc != body_pc && pc != utils->NextBlockPC(cur_pc)) {
+                    continue;
+                }
                 ASSERT(top->intf.be_bfu_nuke == nullptr);
                 top->intf.be_bfu_nuke = fb->machineInst[pos];
                 return;
@@ -302,6 +347,15 @@ void BRQ::ReportFlush(seq_t fbid, seq_t fbid_local, uint64_t pc, uint32_t stid) 
             break;
         }
         --it;
+    }
+    if (used_fallback) {
+        if (cfg->debug_enable) {
+            LOG_INFO_M(Unit::BFU, Stage::NA) << "Skip stale queued nuke without resident header, fbid="
+                << dec << fbid << ", fbid_local=" << fbid_local
+                << ", resident_fbid_local=" << (*it)->fbid_local
+                << ", stid=" << stid << ", pc=0x" << hex << pc;
+        }
+        return;
     }
     cerr<<dec<<"fbid:"<<fbid<<" fbid_local:"<<fbid_local<<" pc:0x"<<hex<<pc<<endl;
     assert(0 && "Can't find a valid header to nuke");
@@ -706,11 +760,16 @@ deque<PtrFB>::iterator BRQ::getFBByHdr(PtrMachineInst const& h) {
     return it;
 }
 
-deque<PtrFB>::iterator BRQ::getFBByFbid(seq_t fbid, seq_t fbid_local, uint32_t stid) {
+deque<PtrFB>::iterator BRQ::findFBByFbid(seq_t fbid, seq_t fbid_local, uint32_t stid) {
     ASSERT(stid < brq.size());
-    auto it = find_if(brq[stid].begin(), brq[stid].end(), [&fbid, &fbid_local](PtrFB& fb){
+    return find_if(brq[stid].begin(), brq[stid].end(), [&fbid, &fbid_local](PtrFB& fb){
         return (fb->fbid == fbid && fb->fbid_local == fbid_local);
     });
+}
+
+deque<PtrFB>::iterator BRQ::getFBByFbid(seq_t fbid, seq_t fbid_local, uint32_t stid) {
+    ASSERT(stid < brq.size());
+    auto it = findFBByFbid(fbid, fbid_local, stid);
     if (it == brq[stid].end()) {
         cerr << dec << "fbid=" << fbid << " fbid_local=" << fbid_local << " stid=" << stid << endl;
     }
