@@ -14,9 +14,9 @@ static bool CalcInstCSEL(MInst &inst)
     uint64_t srcL = inst.srcs[SRC1_IDX]->data;
     uint64_t srcR = inst.srcs[SRC2_IDX]->data;
     if (srcP == 0) {
-        inst.dsts[DST0_IDX]->data = srcR;
-    } else {
         inst.dsts[DST0_IDX]->data = srcL;
+    } else {
+        inst.dsts[DST0_IDX]->data = srcR;
     }
     return true;
 }
@@ -31,9 +31,9 @@ static bool CalcInstPSEL(MInst &inst)
     uint64_t srcL = inst.srcs[SRC1_IDX]->data;
     uint64_t srcR = inst.srcs[SRC2_IDX]->data;
     if (!srcP) {
-        inst.dsts[DST0_IDX]->data = srcR;
-    } else {
         inst.dsts[DST0_IDX]->data = srcL;
+    } else {
+        inst.dsts[DST0_IDX]->data = srcR;
     }
     return true;
 }
