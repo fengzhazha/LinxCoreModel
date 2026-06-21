@@ -14,6 +14,26 @@ namespace JCore {
 
 namespace NS_CORE {
 
+namespace {
+
+bool IsStdFallDescriptor(SimInst const& inst)
+{
+    if (!inst || inst->opcode != Opcode::OP_BSTART || inst->srcs.size() <= SRC1_IDX) {
+        return false;
+    }
+    return inst->srcs[SRC0_IDX]->data == static_cast<uint64_t>(BlockType::BLK_TYPE_STD) &&
+           inst->srcs[SRC1_IDX]->data == static_cast<uint64_t>(BranchType::BLK_BR_FALL);
+}
+
+bool IsInlineFixedTargetDescriptor(SimInst const& openHeader, SimInst const& inst)
+{
+    // LLVM can place an in-body STD/FALL descriptor after a DIRECT header.
+    return openHeader && openHeader->GetBranchType() == BranchType::BLK_BR_DIRECT &&
+           IsStdFallDescriptor(inst);
+}
+
+} // namespace
+
 void StaticPredictor::Predict(PtrFB const& fb) {
     ASSERT(fb->stid < globalDec.size());
     PreDcodeInfo &predec = fb->global ? globalDec[fb->stid] : localDec[fb->pipe_id];
@@ -63,6 +83,24 @@ void StaticPredictor::Predict(PtrFB const& fb) {
         minst->binary = bin;
         minst->pc = (predec.binWidth == 0) ? va : predec.preVa;
         minst->stid = fb->stid;
+        if (OpcodeInInstGroup(minst->opcode, InstGroup::BLOCK_SPLIT) &&
+            IsInlineFixedTargetDescriptor(predec.machineInst, minst)) {
+            spInfo->isInst = true;
+            fb->hid = predec.machineInst->bfuInfo->hid;
+            fb->sp_info.attr[pos] = BranchType::BLK_BR_FALL;
+            fb->sp_info.tgt[pos] = utils->NextBlockPC(va);
+            fb->machineInst[pos] = minst;
+            fb->machineInst[pos]->bfuInfo = std::make_shared<BFUMachineInfo>(*predec.machineInst->bfuInfo);
+            fb->machineInst[pos]->bfuInfo->spInfo = spInfo;
+            fb->machineInst[pos]->bfuInfo->vld = false;
+            fb->machineInst[pos]->bfuInfo->resolved = true;
+            fb->machineInst[pos]->bfuInfo->global = fb->global;
+            fb->machineInst[pos]->bfuInfo->fbid = fb->fbid;
+            fb->machineInst[pos]->bfuInfo->fbid_local = fb->fbid_local;
+            predec.preBin = 0;
+            predec.binWidth = 0;
+            continue;
+        }
         if (OpcodeInInstGroup(minst->opcode, InstGroup::BLOCK_SPLIT) && minst->opcode != Opcode::OP_BSTOP) {
             BlockCommandPtr cmd = std::make_shared<BlockCommand>();
             cmd->AccumulateBlockInfo(minst);

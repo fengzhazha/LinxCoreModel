@@ -2,6 +2,25 @@
 
 namespace JCore {
 
+namespace {
+
+bool IsStdFallDescriptor(const MInstFuncPtr& inst)
+{
+    if (!inst || inst->opcode != Opcode::OP_BSTART || inst->srcs.size() <= SRC1_IDX) {
+        return false;
+    }
+    return inst->srcs[SRC0_IDX]->data == static_cast<uint64_t>(BlockType::BLK_TYPE_STD) &&
+           inst->srcs[SRC1_IDX]->data == static_cast<uint64_t>(BranchType::BLK_BR_FALL);
+}
+
+bool IsInlineFixedTargetDescriptor(const BlockFuncPtr& block, const MInstFuncPtr& inst)
+{
+    // LLVM can place an in-body STD/FALL descriptor after a DIRECT header.
+    return block && block->branchType == BranchType::BLK_BR_DIRECT && IsStdFallDescriptor(inst);
+}
+
+} // namespace
+
 void SoftCore::AccumulateBlockInfo(MInstFuncPtr inst, BlockFuncPtr &currentBlock)
 {
     auto &threadState = threadStatus[inst->threadId];
@@ -13,6 +32,10 @@ void SoftCore::AccumulateBlockInfo(MInstFuncPtr inst, BlockFuncPtr &currentBlock
             currentBlock->localArchStatus.InitScalarGeneralReg(config.scalarMaxIndexDistance,
                                                                config.scalarMaxOutputNum);
         } else {
+            if (IsInlineFixedTargetDescriptor(currentBlock, inst)) {
+                inst->skipCurrentMinst = true;
+                return;
+            }
             if (currentBlock->simt && currentBlock->bTextOffset != 0) {
                 ProcessSIMTEnd(inst, currentBlock);
             } else {
