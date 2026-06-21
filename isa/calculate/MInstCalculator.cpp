@@ -76,13 +76,19 @@ MInstCalculator::MInstCalculator()
 bool MInstCalculator::CalculateMinst(MInst& inst) const
 {
     InstGroup grp = OpcodeManager::Inst().GetOpcodeGroup(inst.opcode);
-    Handler handler = GetHandler(grp);
+    Handler handler = GetHandler(grp, inst);
     return handler ? handler(inst) : false;
 }
 
-Handler MInstCalculator::GetHandler(InstGroup grp) const
+Handler MInstCalculator::GetHandler(InstGroup grp, MInst& inst) const
 {
-    ASSERT(m_handlers.find(grp) != m_handlers.cend());
+    ASSERT(m_handlers.find(grp) != m_handlers.cend())
+        << "missing MInst handler"
+        << " pc=0x" << std::hex << inst.pc
+        << " binary=0x" << inst.binary
+        << " opcode=" << OpcodeManager::Inst().GetOpcodeStr(inst.opcode)
+        << " group=" << GetInstGroupName(grp)
+        << " inst=" << inst.Assemble();
     return m_handlers.at(grp);
 }
 

@@ -21,7 +21,7 @@ public:
 
 private:
     MInstCalculator();
-    Handler GetHandler(InstGroup grp) const;
+    Handler GetHandler(InstGroup grp, MInst& inst) const;
 
     std::unordered_map<InstGroup, Handler> m_handlers;
 };

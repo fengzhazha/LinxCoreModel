@@ -570,10 +570,13 @@ void MtcLDQInfo::lsuExecEngine(MemReqBus &bus)
     MemReqBus stBus = bus;
     const uint32_t uinT32BitsMask = 0xffffffff;
     uint64_t dataL = stBus.data;
-    uint64_t dataR = stBus.src1->data;
+    uint64_t dataR = stBus.src1 ? stBus.src1->data : 0;
     uint64_t dataOut = 0;
     const uint32_t sizeVal = 4;
-    if (!bus.src1->dataVld) {ASSERT(0);}
+    if (bus.opcode != Opcode::OP_INVALID && OpcodeInInstGroup(bus.opcode, InstGroup::ATOMIC) &&
+        (!bus.src1 || !bus.src1->dataVld)) {
+        ASSERT(0);
+    }
     if (stBus.size == sizeVal) {
         dataL &= uinT32BitsMask;
         dataR &= uinT32BitsMask;

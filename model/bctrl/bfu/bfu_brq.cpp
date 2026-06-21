@@ -16,6 +16,24 @@ using namespace std;
 
 namespace NS_CORE {
 
+namespace {
+
+bool IsRecoverableStart(PtrMachineInst const& inst, seq_t hid)
+{
+    if (!inst || !inst->bfuInfo || !inst->bfuInfo->spInfo || !inst->bfuInfo->vld ||
+        inst->bfuInfo->hid != hid) {
+        return false;
+    }
+    return !inst->bfuInfo->spInfo->isInst || inst->opcode == Opcode::OP_BSTART;
+}
+
+bool IsFBIDOlder(seq_t fbid, seq_t fbid_local, seq_t ref_fbid, seq_t ref_fbid_local)
+{
+    return fbid < ref_fbid || (fbid == ref_fbid && fbid_local < ref_fbid_local);
+}
+
+} // namespace
+
 bool BRQ::push(PtrFB const& fb) {
     int vld_mhdr_cnt = 0;
 
@@ -256,6 +274,13 @@ bool BRQ::ResolveHeader(PtrMachineInst const& machineInst) {
 }
 
 void BRQ::ReportFlush(seq_t fbid, seq_t fbid_local, uint64_t pc, uint32_t stid) {
+    if (IsOlderThanFront(fbid, fbid_local, stid)) {
+        if (cfg->debug_enable) {
+            LOG_INFO_M(Unit::BFU, Stage::NA) << "Skip stale queued nuke, fbid=" << dec << fbid
+                << ", fbid_local=" << fbid_local << ", stid=" << stid << ", pc=0x" << hex << pc;
+        }
+        return;
+    }
     auto it = getFBByFbid(fbid, fbid_local, stid);
     while (true) {
         PtrFB fb = (*it);
@@ -627,6 +652,34 @@ bool BRQ::isStall(size_t reserve, uint32_t stid) {
     return brq[stid].size() + reserve > cfg->brq_depth;
 }
 
+bool BRQ::HasFBByHdr(PtrMachineInst const& h) const
+{
+    if (!h || !h->bfuInfo || h->stid >= brq.size()) {
+        return false;
+    }
+    auto it = find_if(brq[h->stid].begin(), brq[h->stid].end(), [&h](PtrFB const& fb) {
+        return fb->fbid == h->bfuInfo->fbid && fb->fbid_local == h->bfuInfo->fbid_local;
+    });
+    return it != brq[h->stid].end();
+}
+
+bool BRQ::IsOlderThanFront(PtrMachineInst const& h) const
+{
+    if (!h || !h->bfuInfo) {
+        return false;
+    }
+    return IsOlderThanFront(h->bfuInfo->fbid, h->bfuInfo->fbid_local, h->stid);
+}
+
+bool BRQ::IsOlderThanFront(seq_t fbid, seq_t fbid_local, uint32_t stid) const
+{
+    if (stid >= brq.size() || brq[stid].empty()) {
+        return false;
+    }
+    auto const& front = brq[stid].front();
+    return IsFBIDOlder(fbid, fbid_local, front->fbid, front->fbid_local);
+}
+
 deque<PtrFB>::iterator BRQ::getFBByHdr(PtrMachineInst const& h) {
     ASSERT(h->stid < brq.size());
     auto it = find_if(brq[h->stid].begin(), brq[h->stid].end(), [&h](PtrFB& fb){
@@ -681,8 +734,7 @@ deque<PtrFB>::iterator BRQ::getFBStartByHid(seq_t hid, uint32_t stid) {
     ASSERT(stid < brq.size());
     auto it = find_if(brq[stid].begin(), brq[stid].end(), [hid](PtrFB& fb){
         for (pos_t pos = 0; pos < BFU_BANDWIDTH; pos++) {
-            if (fb->machineInst[pos] && fb->machineInst[pos]->bfuInfo->vld &&
-                !fb->machineInst[pos]->bfuInfo->spInfo->isInst && fb->machineInst[pos]->bfuInfo->hid == hid)
+            if (IsRecoverableStart(fb->machineInst[pos], hid))
                 return true;
         }
         return false;
@@ -695,18 +747,22 @@ deque<PtrFB>::iterator BRQ::getFBStartByHid(seq_t hid, uint32_t stid) {
 }
 
 PtrMachineInst BRQ::getBStartMhdrByFbid(seq_t hid, uint32_t stid) {
+    ASSERT(stid < brq.size());
     for (auto it = brq[stid].begin(); it != brq[stid].end(); it++) {
         auto fb = *it;
         pos_t pos_end = fb->main_info.end_pos;
         for (pos_t pos = utils->CalcPosInFB(fb->va); pos <= pos_end && pos < BFU_BANDWIDTH; pos++) {
             if (fb->machineInst[pos] == nullptr)
                 continue;
-            if (fb->machineInst[pos]->bfuInfo->hid == hid && fb->machineInst[pos]->bfuInfo->vld
-                && fb->machineInst[pos]->bfuInfo->spInfo && !fb->machineInst[pos]->bfuInfo->spInfo->isInst)
+            if (IsRecoverableStart(fb->machineInst[pos], hid))
                 return fb->machineInst[pos];
         }
     }
-    assert(0 && "Can't find bstart in BRQ!");
+    ASSERT(false && "Can't find bstart in BRQ!")
+        << " hid=" << dec << hid
+        << " stid=" << stid
+        << " brq_depth=" << brq[stid].size();
+    return nullptr;
 }
 
 deque<PtrFB>::iterator BRQ::getBodyEndFBByHdr(PtrMachineInst const& h) {

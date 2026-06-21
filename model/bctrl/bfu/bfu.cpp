@@ -15,6 +15,33 @@ using namespace std;
 
 namespace NS_CORE {
 
+namespace {
+
+PtrMachineInst FindPreviousStartHeader(PtrFB const& fb, pos_t pos)
+{
+    if (!fb || pos == 0) {
+        return nullptr;
+    }
+    for (pos_t prev = pos; prev-- > 0;) {
+        auto const& inst = fb->machineInst[prev];
+        if (inst && inst->bfuInfo && inst->bfuInfo->vld && inst->bfuInfo->spInfo &&
+            !inst->bfuInfo->spInfo->isInst) {
+            return inst;
+        }
+    }
+    return nullptr;
+}
+
+void PreserveLastMarkerHeaderRelation(PtrMachineInst& marker, PtrMachineInst const& start)
+{
+    if (!marker || !marker->bfuInfo || !start || !start->bfuInfo) {
+        return;
+    }
+    marker->bfuInfo->hid = start->bfuInfo->hid;
+}
+
+} // namespace
+
 bool BFU::MisAtF4(const PtrFB &fb) {
     if (fb == nullptr) {
         return false;
@@ -283,7 +310,7 @@ void BFU::DeliverInst(PtrMachineInst const& h) {
 
 void BFU::HandleBEMsg() {
     PtrMachineInst h;
-    if (!intf.be_bfu_nuke_info_q->Empty()) {
+    if (!intf.be_bfu_nuke && !intf.be_bfu_nuke_info_q->Empty()) {
         NukeInfo info = intf.be_bfu_nuke_info_q->Read();
         brq.ReportFlush(info.fbid, info.fbid_local, info.pc, info.stid);
     }
@@ -583,6 +610,7 @@ void BFU::ArbitrateForLocalFB(PtrFB &fb) {
         h->bfuInfo->predict_taken = false;
         if (main_info.taken && utils.IsBendOrBstart(h->bfuInfo->spInfo)) {
             fb->end = true;
+            PreserveLastMarkerHeaderRelation(h, FindPreviousStartHeader(fb, pos));
             utils.SetLast(h);
             main_info.end_pos = pos;
             fb->setInvalid(pos+1);
@@ -604,6 +632,7 @@ void BFU::ArbitrateForLocalFB(PtrFB &fb) {
             }
         } else if (utils.IsBendOrBstart(h->bfuInfo->spInfo)) {
             fb->end = true;
+            PreserveLastMarkerHeaderRelation(h, FindPreviousStartHeader(fb, pos));
             utils.SetLast(h);
             main_info.pos = pos;
             main_info.end_pos = pos;
@@ -1382,6 +1411,21 @@ bool BFU::NukeHandling() {
     if (intf.be_bfu_nuke) {
         auto nuke_mhdr = intf.be_bfu_nuke;
         ASSERT(nuke_mhdr->stid != -1U);
+        if (!brq.HasFBByHdr(nuke_mhdr)) {
+            ASSERT(brq.IsOlderThanFront(nuke_mhdr))
+                << "missing active nuke header"
+                << " fbid=" << nuke_mhdr->bfuInfo->fbid
+                << " fbid_local=" << nuke_mhdr->bfuInfo->fbid_local
+                << " hid=" << nuke_mhdr->bfuInfo->hid
+                << " pc=0x" << std::hex << nuke_mhdr->GetBundlePosPC();
+            if (cfg.debug_enable) {
+                LOG_INFO_M(Unit::BFU, Stage::NA) << "Skip stale direct nuke, fbid=" << std::dec
+                    << nuke_mhdr->bfuInfo->fbid << ", fbid_local=" << nuke_mhdr->bfuInfo->fbid_local
+                    << ", hid=" << nuke_mhdr->bfuInfo->hid << ", pc=0x" << std::hex
+                    << nuke_mhdr->GetBundlePosPC();
+            }
+            return true;
+        }
         fetchThQ.FlushIf(nuke_mhdr->stid);
         pipe[F0].Flush(nuke_mhdr->stid);
         pipe[F1].Flush(nuke_mhdr->stid);
