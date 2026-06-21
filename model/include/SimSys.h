@@ -117,6 +117,10 @@ public:
     uint64_t                nsPECorrectICnt = 0;
     /* \brief Simulate memory aaccelsses externally */
     bool                    externalMode = false;
+    bool                    testFinisherSeen = false;
+    bool                    testFinisherFailed = false;
+    uint64_t                testFinisherValue = 0;
+    uint32_t                testFinisherByteMask = 0;
 
     std::vector<bool>                    terminate;
 
@@ -189,6 +193,7 @@ public:
     uint64_t                fetchData(uint64_t address, int width);
     uint64_t                loadData(uint64_t address, int width, bool signedLoad);
     void                    storeData(uint64_t address, uint64_t data, int width);
+    void                    observeTestFinisher(uint64_t address, uint64_t data, int width);
 
     // utilities
     uint64_t                getCycles() { return cycles; }

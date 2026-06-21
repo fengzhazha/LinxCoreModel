@@ -815,6 +815,10 @@ void SPEROB::commit()
         if (OpcodeIsStore(inst->opcode)) {
                 youngest_noncommit_sid = uop.inst->sid;
                 tileStoreCredit++;
+                if (inst->accMemInfo && inst->psrcs_.size() > SRC0_IDX) {
+                    GetSim()->observeTestFinisher(inst->accMemInfo->accMemAddr, inst->psrcs_[SRC0_IDX]->data,
+                                                  GetLoadStoreBytes(inst->opcode));
+                }
         }
 
         if (OpcodeIsLoad(inst->opcode)) {
@@ -1376,4 +1380,3 @@ void SPEROB::Stats()
 }
 
 } // namespace JCore
-

@@ -14,6 +14,14 @@
 
 using namespace std;
 namespace JCore {
+
+namespace {
+constexpr uint64_t kLinxTestFinisherAddr = 0x10009000;
+constexpr uint16_t kLinxTestFinisherPass = 0x5555;
+constexpr uint16_t kLinxTestFinisherFail = 0x3333;
+constexpr uint16_t kLinxTestFinisherReset = 0x7777;
+}
+
 void SimSys::step() {
     if (!systemStatus.EcallRunning()) {
         cycles++;
@@ -563,8 +571,33 @@ bool SimSys::needTerminate() {
     if (term) {
         return true;
     }
+    if (testFinisherSeen) return true;
     if (correctBCount == maxBCount) return true;
     return false;
+}
+
+void SimSys::observeTestFinisher(uint64_t address, uint64_t data, int width)
+{
+    for (int i = 0; i < width; i++) {
+        uint64_t byteAddr = address + i;
+        uint64_t byteData = (data >> (i * 8)) & 0xFF;
+        if (byteAddr < kLinxTestFinisherAddr || byteAddr >= kLinxTestFinisherAddr + sizeof(uint32_t)) {
+            continue;
+        }
+        uint32_t finisherByte = static_cast<uint32_t>(byteAddr - kLinxTestFinisherAddr);
+        uint64_t shift = finisherByte * 8;
+        testFinisherValue = (testFinisherValue & ~(0xFFULL << shift)) | (byteData << shift);
+        testFinisherByteMask |= (1U << finisherByte);
+        if ((testFinisherByteMask & 0x3U) != 0x3U) {
+            continue;
+        }
+        uint16_t status = static_cast<uint16_t>(testFinisherValue & 0xFFFFU);
+        if (status == kLinxTestFinisherPass || status == kLinxTestFinisherFail ||
+            status == kLinxTestFinisherReset) {
+            testFinisherSeen = true;
+            testFinisherFailed = (status != kLinxTestFinisherPass);
+        }
+    }
 }
 
 bool SimSys::buildSystem() {
@@ -654,6 +687,7 @@ uint64_t SimSys::loadData(uint64_t address, int width, bool signedLoad) {
 }
 
 void SimSys::storeData(uint64_t address, uint64_t data, int width) {
+    observeTestFinisher(address, data, width);
     // change to byte aaccelss to avoid cross section
     for (int i = 0; i <width; i++) {
         memory.Store(address+i, (data>>(i*8))&0xFF, 1);

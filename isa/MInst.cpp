@@ -501,15 +501,16 @@ static const std::unordered_map<uint32_t, OPConvertType> L_IMap = {
     {12, OPConvertType::OPCVT_S4}
 };
 
-// sw,uw,neg
+// SrcRType encoding matches the compiler/QEMU contract:
+// 0=.sw, 1=.uw, 2=.neg/.not, 3=no modifier.
 static OPConvertType GetSrcRCvtTypeA(uint32_t srcRType)
 {
     switch(srcRType) {
-        case 1:
+        case 0:
             return OPConvertType::OPCVT_S32;
-        case 2:
+        case 1:
             return OPConvertType::OPCVT_U32;
-        case 3:
+        case 2:
             return OPConvertType::OPCVT_NEG;
         default:
             return OPConvertType::OPCVT_NO_CVT;
@@ -517,15 +518,16 @@ static OPConvertType GetSrcRCvtTypeA(uint32_t srcRType)
     return OPConvertType::OPCVT_NO_CVT;
 }
 
-// sw,uw,not
+// SrcRType encoding matches the compiler/QEMU contract:
+// 0=.sw, 1=.uw, 2=.neg/.not, 3=no modifier.
 static OPConvertType GetSrcRCvtTypeB(uint32_t srcRType)
 {
     switch(srcRType) {
-        case 1:
+        case 0:
             return OPConvertType::OPCVT_S32;
-        case 2:
+        case 1:
             return OPConvertType::OPCVT_U32;
-        case 3:
+        case 2:
             return OPConvertType::OPCVT_NOT;
         default:
             return OPConvertType::OPCVT_NO_CVT;

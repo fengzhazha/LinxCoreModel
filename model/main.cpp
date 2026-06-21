@@ -375,6 +375,13 @@ int main(int argc, char *argv[])
     sim->ReportVectorCore();
     sim->ReportStat();
     sim->DumpSwimLaneToJson();
+    if (sim->testFinisherSeen) {
+        const uint16_t status = static_cast<uint16_t>(sim->testFinisherValue & 0xFFFFU);
+        cout << "linx_test_finisher write addr=0x10009000 val=0x"
+             << hex << setw(4) << setfill('0') << status << dec
+             << (sim->testFinisherFailed ? " fail" : " pass") << endl;
+        return sim->testFinisherFailed ? EX_SOFTWARE : 0;
+    }
     return 0;
 }
 
