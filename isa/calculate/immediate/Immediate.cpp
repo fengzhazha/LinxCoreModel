@@ -4,6 +4,16 @@ namespace JCore {
 namespace Calculate {
 namespace Immediate {
 
+static uint64_t SignExtend32(uint64_t value)
+{
+    return static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(value & MASK_BIT32)));
+}
+
+static uint64_t ZeroExtend32(uint64_t value)
+{
+    return value & MASK_BIT32;
+}
+
 static bool CalcInstLUI(MInst &inst)
 {
     if (inst.srcs.size() != SRC1_IDX || inst.dsts.size() != DST1_IDX) {
@@ -14,7 +24,7 @@ static bool CalcInstLUI(MInst &inst)
             inst.dsts[DST0_IDX]->data = inst.srcs[SRC0_IDX]->data & (~MASK_BIT12);
             break;
         case EncodeLen::ENL_H:
-            inst.dsts[DST0_IDX]->data = inst.srcs[SRC0_IDX]->data & (~MASK_BIT32);
+            inst.dsts[DST0_IDX]->data = SignExtend32(inst.srcs[SRC0_IDX]->data);
             break;
         default:
             inst.dsts[DST0_IDX]->data = inst.srcs[SRC0_IDX]->data;
@@ -27,8 +37,7 @@ static bool CalcInstLIS(MInst &inst)
     if (inst.srcs.size() != SRC1_IDX || inst.dsts.size() != DST1_IDX) {
         return false;
     }
-    int32_t v = static_cast<int32_t>(inst.srcs[SRC0_IDX]->data & MASK_BIT32);
-    inst.dsts[DST0_IDX]->data = static_cast<uint64_t>(static_cast<int64_t>(v));
+    inst.dsts[DST0_IDX]->data = SignExtend32(inst.srcs[SRC0_IDX]->data);
     return true;
 }
 
@@ -37,8 +46,7 @@ static bool CalcInstLIU(MInst &inst)
     if (inst.srcs.size() != SRC1_IDX || inst.dsts.size() != DST1_IDX) {
         return false;
     }
-    int32_t v = static_cast<int32_t>(inst.srcs[SRC0_IDX]->data & MASK_BIT32);
-    inst.dsts[DST0_IDX]->data = static_cast<uint64_t>(static_cast<int64_t>(v));
+    inst.dsts[DST0_IDX]->data = ZeroExtend32(inst.srcs[SRC0_IDX]->data);
     return true;
 }
 
