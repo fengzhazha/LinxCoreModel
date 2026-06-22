@@ -2089,9 +2089,10 @@ void BFU::DeliverStall(uint32_t stid) {
     DeliverFBInfo selected_info = DeliverFBInfo();
     uint32_t global_idx = pipe[F4].GetFirstValidFBIdx();
     uint32_t fb_num = 0;
-    std::unique_ptr<bool[]> select_pipe(new bool[cfg.local_pipe_num]());
+    std::unique_ptr<bool[]> select_pipe(new bool[local_fu.size()]());
     std::unique_ptr<bool[]> select_fb_global(new bool[cfg.bfu_ntaken]());
-    if (pipe[F4].state != NS_CORE::PipeState::INVALID && pipe[F4].fb[global_idx] &&
+    if (pipe[F4].state != NS_CORE::PipeState::INVALID &&
+        global_idx < pipe[F4].fb.size() && pipe[F4].fb[global_idx] &&
         pipe[F4].fb[global_idx]->stid != stid) {
         return;
     }

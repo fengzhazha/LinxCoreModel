@@ -815,8 +815,9 @@ void SPEROB::commit()
         if (OpcodeIsStore(inst->opcode)) {
                 youngest_noncommit_sid = uop.inst->sid;
                 tileStoreCredit++;
-                if (inst->accMemInfo && inst->psrcs_.size() > SRC0_IDX) {
-                    GetSim()->observeTestFinisher(inst->accMemInfo->accMemAddr, inst->psrcs_[SRC0_IDX]->data,
+                uint32_t dataSrc = GetStoreDataSrcIndex(inst->opcode);
+                if (inst->accMemInfo && inst->psrcs_.size() > dataSrc) {
+                    GetSim()->observeTestFinisher(inst->accMemInfo->accMemAddr, inst->psrcs_[dataSrc]->data,
                                                   GetLoadStoreBytes(inst->opcode));
                 }
         }

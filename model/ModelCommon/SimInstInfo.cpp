@@ -807,9 +807,12 @@ MemReqBus SimInstInfo::GenMemReq(uint32_t peCount, uint32_t lane) {
                 ASSERT(this->opcode == Opcode::OP_DC_ZVA);
                 memReq.data = 0;  // todo
             } else {
-                memReq.data = psrcs_[SRC0_IDX]->vecDataVld ?
-                              psrcs_[SRC0_IDX]->vecData.Get(lane, static_cast<uint32_t>(psrcs_[SRC0_IDX]->width)) :
-                              psrcs_[SRC0_IDX]->data;
+                uint32_t dataSrc = GetStoreDataSrcIndex(opcode);
+                ASSERT(psrcs_.size() > dataSrc);
+                auto &psrc = psrcs_[dataSrc];
+                memReq.data = psrc->vecDataVld ?
+                              psrc->vecData.Get(lane, static_cast<uint32_t>(psrc->width)) :
+                              psrc->data;
             }
             // memReq.ref_id = ref.lsInfo.id;
             memReq.type = type;

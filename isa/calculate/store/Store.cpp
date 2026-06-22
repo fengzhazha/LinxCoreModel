@@ -43,7 +43,7 @@ static bool CalcStorePCRAddr(MInst &inst)
     if (inst.srcs.size() != SRC2_IDX) {
         return false;
     }
-    inst.accMemInfo->accMemAddr = inst.pc + inst.srcs[SRC1_IDX]->data;
+    inst.accMemInfo->accMemAddr = inst.pc + inst.srcs[SRC0_IDX]->data;
     return true;
 }
 

@@ -47,14 +47,17 @@ void SoftCore::AaccelssMemoryStore(MInstFuncPtr inst)
     uint64_t addr = inst->accMemInfo->accMemAddr;
     uint64_t storeSize = GetLoadStoreBytes(inst->opcode);
     bool storePair = IsLoadStorePair(inst->opcode);
+    uint32_t dataSrc = GetStoreDataSrcIndex(inst->opcode);
+    ASSERT(inst->srcs.size() > dataSrc);
+    uint64_t storeData = inst->srcs[dataSrc]->data;
     if (aaccelssTileReg) {
-        threadState.archStatus.tileReg.Store(addr, 0, storeSize, inst->srcs[SRC0_IDX]->data);
+        threadState.archStatus.tileReg.Store(addr, 0, storeSize, storeData);
         if (storePair) {
             threadState.archStatus.tileReg.Store(addr + storeSize, 0, storeSize, inst->srcs[SRC1_IDX]->data);
         }
     } else {
-        AssertNotTextStore("SoftCore store", inst, addr, inst->srcs[SRC0_IDX]->data, storeSize);
-        memory->Store(addr, inst->srcs[SRC0_IDX]->data, storeSize);
+        AssertNotTextStore("SoftCore store", inst, addr, storeData, storeSize);
+        memory->Store(addr, storeData, storeSize);
         if (storePair) {
             AssertNotTextStore("SoftCore store-pair", inst, addr + storeSize, inst->srcs[SRC1_IDX]->data, storeSize);
             memory->Store(addr + storeSize, inst->srcs[SRC1_IDX]->data, storeSize);

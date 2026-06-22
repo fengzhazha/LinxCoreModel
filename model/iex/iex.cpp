@@ -1648,7 +1648,9 @@ MemReqBus getMemReq(SimInst &inst) {
 
         if (!memReq.is_load) {
             memReq.data_vld = true;
-            memReq.data = inst->srcs[SRC0_IDX]->data;
+            uint32_t dataSrc = GetStoreDataSrcIndex(inst->opcode);
+            ASSERT(inst->srcs.size() > dataSrc);
+            memReq.data = inst->srcs[dataSrc]->data;
             memReq.type = inst->type;
         } else {
             memReq.data_vld = false;

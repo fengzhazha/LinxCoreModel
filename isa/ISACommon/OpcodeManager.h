@@ -745,6 +745,24 @@ inline bool OpcodeIsStore(Opcode opcode)
     return OpcodeManager::Inst().GetOpcodeGroup(opcode) == InstGroup::STORE;
 }
 
+inline bool OpcodeIsStorePCR(Opcode opcode)
+{
+    switch (opcode) {
+        case Opcode::OP_SB_PCR:
+        case Opcode::OP_SH_PCR:
+        case Opcode::OP_SW_PCR:
+        case Opcode::OP_SD_PCR:
+            return true;
+        default:
+            return false;
+    }
+}
+
+inline uint32_t GetStoreDataSrcIndex(Opcode opcode)
+{
+    return OpcodeIsStorePCR(opcode) ? 1U : 0U;
+}
+
 inline bool OpcodeInInstGroup(Opcode opcode, InstGroup tgt)
 {
     return OpcodeManager::Inst().GetOpcodeGroup(opcode) == tgt;

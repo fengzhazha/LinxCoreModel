@@ -455,10 +455,12 @@ void AGUPipe::runE1Store(const SimInst &inst)
         ASSERT(inst->realReqCnt > 0);
         MemRequest memReq = CreateMemReq(inst, false, curMask, toMem);
         memReq.addrs = addrs;
-        if (OperandTypeNeedVecData(inst->psrcs_[SRC0_IDX]->type)) {
-            memReq.data = inst->psrcs_[SRC0_IDX]->vecData;
+        uint32_t dataSrc = GetStoreDataSrcIndex(inst->opcode);
+        ASSERT(inst->psrcs_.size() > dataSrc);
+        if (OperandTypeNeedVecData(inst->psrcs_[dataSrc]->type)) {
+            memReq.data = inst->psrcs_[dataSrc]->vecData;
         } else {
-            auto &psrc = inst->psrcs_[SRC0_IDX];
+            auto &psrc = inst->psrcs_[dataSrc];
             memReq.data.Init(static_cast<uint32_t>(psrc->width), inst->lanes);
             for (uint64_t index = 0; index < inst->lanes; index++) {
                 memReq.data.Set(psrc->data, index);
@@ -504,10 +506,12 @@ void AGUPipe::LocalStore(const SimInst &inst)
     memReq.realReqCnt = 1U;
     memReq.addrs.Init(static_cast<size_t>(OperandWidth::OPDW_D), 1);
     memReq.addrs.Set(inst->accMemInfo->accMemAddr, 0, static_cast<size_t>(OperandWidth::OPDW_D));
-    if (OperandTypeNeedVecData(inst->psrcs_[SRC0_IDX]->type)) {
-        memReq.data = inst->psrcs_[SRC0_IDX]->vecData;
+    uint32_t dataSrc = GetStoreDataSrcIndex(inst->opcode);
+    ASSERT(inst->psrcs_.size() > dataSrc);
+    if (OperandTypeNeedVecData(inst->psrcs_[dataSrc]->type)) {
+        memReq.data = inst->psrcs_[dataSrc]->vecData;
     } else {
-        auto &psrc = inst->psrcs_[SRC0_IDX];
+        auto &psrc = inst->psrcs_[dataSrc];
         memReq.data.Init(static_cast<uint32_t>(psrc->width), inst->lanes);
         for (uint64_t index = 0; index < inst->lanes; index++) {
             memReq.data.Set(psrc->data, index);
