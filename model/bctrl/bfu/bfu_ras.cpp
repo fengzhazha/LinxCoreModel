@@ -97,9 +97,12 @@ uint64_t RAS::valids() {
 
 bool RAS::needStall() {
     // need to stall only if seperate spec/cmt table is enabled
-    bool spec_all_vld = true;
-    for (auto& e : spec_table) spec_all_vld &= e.vld;
-    return cfg->ras_spec_cmt && (spec_wptr == spec_bos) && spec_all_vld;
+    if (!cfg->ras_spec_cmt || spec_table.empty()) {
+        return false;
+    }
+    // handleCall writes exactly at spec_wptr.  A valid write slot is a real
+    // allocation hazard even if recovery has left holes elsewhere in the ring.
+    return spec_table[spec_wptr].vld;
 }
 
 addr_t RAS::Predict(PtrFB const& fb, pos_t pos) {

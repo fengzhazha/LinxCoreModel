@@ -1219,6 +1219,11 @@ void BFU::RunF1() {
 
         auto& fb = pipe[F1].fb[i];
         ASSERT(fb->stid != -1U);
+        ASSERT(fb->stid < ras.size());
+        if (ras[fb->stid].needStall()) {
+            stats->ras_stall++;
+            break;
+        }
         PredF1(fb);
     }
 }
