@@ -784,24 +784,37 @@ private:
         int fd = arguments[0];
         uint64_t iov_addr = arguments[1];
         int iovcnt = arguments[2];
-        struct iovec* p_iov = (struct iovec*)malloc(sizeof(struct iovec) * iovcnt);
+        if (iovcnt <= 0) {
+            returnValue = 0;
+            return;
+        }
+
+        std::vector<struct iovec> iovs(static_cast<size_t>(iovcnt));
+        std::vector<std::vector<char>> buffers(static_cast<size_t>(iovcnt));
 
         for (int i = 0; i < iovcnt; i++) {
             uint64_t len = 0;
             aaccelssor.Load(iov_addr + sizeof(struct iovec) * i + 8, len);
 
-            p_iov[i].iov_base = (void*)malloc(len);
-            p_iov[i].iov_len = len;
+            buffers[static_cast<size_t>(i)].resize(static_cast<size_t>(len));
+            iovs[static_cast<size_t>(i)].iov_base = buffers[static_cast<size_t>(i)].data();
+            iovs[static_cast<size_t>(i)].iov_len = len;
         }
 
-        int ret = static_cast<int>(readv(fd, p_iov, iovcnt));
+        int ret = static_cast<int>(readv(fd, iovs.data(), iovcnt));
 
         // write iov to guest
-
-        for (int i = 0; i < iovcnt; i++) {
-            uint64_t base = 0;
-            aaccelssor.Load(iov_addr + sizeof(struct iovec) * i, base);
-            aaccelssor.Store(base, p_iov[i].iov_base, p_iov[i].iov_len);
+        if (ret > 0) {
+            size_t remaining = static_cast<size_t>(ret);
+            for (int i = 0; i < iovcnt && remaining > 0; i++) {
+                size_t writeLen = remaining < iovs[static_cast<size_t>(i)].iov_len
+                                      ? remaining
+                                      : iovs[static_cast<size_t>(i)].iov_len;
+                uint64_t base = 0;
+                aaccelssor.Load(iov_addr + sizeof(struct iovec) * i, base);
+                aaccelssor.Store(base, iovs[static_cast<size_t>(i)].iov_base, writeLen);
+                remaining -= writeLen;
+            }
         }
 
         if (ret == -1) {
@@ -811,11 +824,6 @@ private:
             returnValue = ret;
         }
 
-        /* free mem */
-        for (int i = 0; i < iovcnt; i++) {
-            free(p_iov[i].iov_base);
-        }
-        free(p_iov);
     }
 
     HANDLER(close)

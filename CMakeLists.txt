@@ -9,7 +9,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 # 包含自定义 CMake 模块
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(GlobalSettings)
-include(SOCSetup)
 
 find_path(RAPIDJSON_INCLUDE_DIR document.h
     HINTS /opt/homebrew/include /opt/homebrew/opt/rapidjson/include
@@ -26,6 +25,9 @@ find_path(LIBELF_GELF_INCLUDE_DIR gelf.h
 find_path(LIBELF_ROOT_INCLUDE_DIR libelf/libelf.h
     HINTS /opt/homebrew/include /opt/homebrew/opt/libelf/include
 )
+if(NOT LIBELF_ROOT_INCLUDE_DIR AND LIBELF_INCLUDE_DIR)
+    set(LIBELF_ROOT_INCLUDE_DIR ${LIBELF_INCLUDE_DIR})
+endif()
 find_library(LIBELF_LIBRARY elf HINTS /opt/homebrew/lib /opt/homebrew/opt/libelf/lib)
 if(LIBELF_LIBRARY)
     set(LINXCOREMODEL_LIBELF ${LIBELF_LIBRARY})
@@ -40,17 +42,17 @@ gf_detect_platform()
 gf_set_global_compiler_options()
 
 set(LINXCOREMODEL_CLANG_COMPAT_OPTIONS
-    -Wno-error=c++17-extensions
-    -Wno-error=defaulted-function-deleted
-    -Wno-error=delete-non-abstract-non-virtual-dtor
-    -Wno-error=final-dtor-non-final-class
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=c++17-extensions>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=defaulted-function-deleted>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=delete-non-abstract-non-virtual-dtor>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=final-dtor-non-final-class>
     -Wno-error=format
-    -Wno-error=inconsistent-missing-override
-    -Wno-error=mismatched-tags
-    -Wno-error=parentheses-equality
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=inconsistent-missing-override>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=mismatched-tags>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=parentheses-equality>
     -Wno-error=unused-const-variable
-    -Wno-error=unused-lambda-capture
-    -Wno-error=unused-private-field
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=unused-lambda-capture>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=unused-private-field>
     -Wno-error=unused-but-set-variable
 )
 
@@ -113,33 +115,7 @@ elseif(GENERIC_SOC_NEW)
         message(STATUS "GENERIC SOC support disabled (not x86 platform)")
     endif()
 else()
-    # 链接 P688 SOC 库（如果启用）
-    if(GRAPHFLOW_X86_SUPPORT)
-        # 将SOC 启用
-        message(STATUS "Configuring SOC support")
-        setup_soc_libraries()
-
-        # 检查 SOC 库是否成功设置（使用从函数导出的变量）
-        if(SOC_LIBS_GLOBAL AND SOC_EXTRACT_TARGET_GLOBAL)
-            # message(STATUS "SOC libraries available: ${SOC_LIBS_GLOBAL}")
-            message(STATUS "SOC extract target: ${SOC_EXTRACT_TARGET_GLOBAL}")
-            
-            # 将 SOC 变量设置为全局变量，以便在子目录中使用
-            set(SOC_LIB_NAMES_GLOBAL ${SOC_LIB_NAMES_GLOBAL} CACHE INTERNAL "SOC library names for global use")
-            set(SOC_LIBS_GLOBAL ${SOC_LIBS_GLOBAL} CACHE INTERNAL "SOC libraries for global use")
-            set(SOC_EXTRACT_TARGET_GLOBAL ${SOC_EXTRACT_TARGET_GLOBAL} CACHE INTERNAL "SOC extract target for global use")
-            
-            # 设置SOC库目录和编译定义
-            link_directories(${PROJECT_SOURCE_DIR}/model/soc/lib)
-            add_definitions(-DEXT_SOC_INTF)
-        else()
-            message(WARNING "SOC libraries not available, skipping SOC setup")
-            set(GRAPHFLOW_X86_SUPPORT OFF CACHE BOOL "SOC support status" FORCE)
-        endif()
-
-    else()
-        message(STATUS "SOC support disabled (not x86 platform)")
-    endif()
+    message(STATUS "Using built-in SOC wrapper without external SOC libraries")
 endif()
 
 
@@ -214,19 +190,6 @@ else()
     add_executable(gfsim model/main.cpp model/soc/soc_wrapper.cpp)
     target_link_libraries(gfsim PRIVATE soft_core model_lib isa_blockisa softfloat ${LINXCOREMODEL_LIBELF})
     message(STATUS "Created target: gfsim")
-
-    # 链接P688 SOC 库到在根目录中创建的目标
-    if(GRAPHFLOW_X86_SUPPORT AND SOC_LIBS_GLOBAL AND SOC_EXTRACT_TARGET_GLOBAL)
-        message(STATUS "Adding P688 SOC dependencies to targets built in root directory")
-
-        if(TARGET gfsim)
-            link_soc_libraries(gfsim)
-        else()
-            message(WARNING "Target gfsim does not exist, cannot add SOC dependencies")
-        endif()
-    elseif(GRAPHFLOW_X86_SUPPORT)
-        message(WARNING "SOC support enabled but SOC libraries not available for root targets")
-    endif()
 endif()
 
 if(TARGET gfsim)

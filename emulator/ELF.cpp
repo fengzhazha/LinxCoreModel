@@ -14,6 +14,8 @@
 
 #if defined(__APPLE__)
 #include <crt_externs.h>
+#else
+extern char** environ;
 #endif
 
 #if __has_include(<sys/auxv.h>)
@@ -127,8 +129,7 @@ static char** HostEnviron()
 #if defined(__APPLE__)
     return *_NSGetEnviron();
 #else
-    extern char** environ;
-    return environ;
+    return ::environ;
 #endif
 }
 

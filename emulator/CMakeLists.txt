@@ -11,7 +11,7 @@ list(FILTER EMULATOR_SRC EXCLUDE REGEX ".*/main\\.cpp$")
 add_library(soft_core STATIC ${EMULATOR_SRC})
 target_compile_options(soft_core PRIVATE
     -Wno-error=format
-    -Wno-error=nontrivial-memcall
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=nontrivial-memcall>
 )
 target_include_directories(soft_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}

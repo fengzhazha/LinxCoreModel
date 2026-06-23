@@ -147,7 +147,7 @@ public:
     static void InitFilterSet(const std::vector<std::string> &filterModule)
     {
         for (auto &module : filterModule) {
-            GetManager().unitFilterSet.insert(StrToMachineType(module));
+            GetManager().unitFilterSet.insert(StrToUnit(module));
         }
     }
     static bool IsInFilterSet(Unit &unit)
@@ -206,6 +206,9 @@ public:
         ss << tmp.str();
         ssRich << tmp.str();
     }
+
+    Logger(LoggerLevel levelIn, MachineType unit, Stage stage, const std::string &func, int line)
+        : Logger(levelIn, MachineTypeToUnit(unit), stage, func, line) {}
 
     ~Logger() {
         if (enableLog) {

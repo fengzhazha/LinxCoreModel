@@ -14,17 +14,17 @@ endif()
 # 创建模型库
 add_library(model_lib STATIC ${MODEL_SRC})
 target_compile_options(model_lib PRIVATE
-    -Wno-error=c++17-extensions
-    -Wno-error=defaulted-function-deleted
-    -Wno-error=delete-non-abstract-non-virtual-dtor
-    -Wno-error=final-dtor-non-final-class
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=c++17-extensions>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=defaulted-function-deleted>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=delete-non-abstract-non-virtual-dtor>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=final-dtor-non-final-class>
     -Wno-error=format
-    -Wno-error=inconsistent-missing-override
-    -Wno-error=mismatched-tags
-    -Wno-error=parentheses-equality
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=inconsistent-missing-override>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=mismatched-tags>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=parentheses-equality>
     -Wno-error=unused-const-variable
-    -Wno-error=unused-lambda-capture
-    -Wno-error=unused-private-field
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=unused-lambda-capture>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=unused-private-field>
     -Wno-error=unused-but-set-variable
 )
 target_include_directories(model_lib PUBLIC
@@ -76,19 +76,5 @@ elseif (GENERIC_SOC_NEW)
         message(STATUS "SOC generic support disabled for model_lib (not x86 platform)")
     endif()
 else()
-    if(GRAPHFLOW_X86_SUPPORT)
-        message(STATUS "Checking SOC P688 support for model_lib\n")
-        
-        # 使用统一的链接函数
-        if(SOC_LIBS_GLOBAL AND SOC_EXTRACT_TARGET_GLOBAL)
-            message(STATUS "Adding SOC P688 dependencies to model_lib")
-            link_soc_libraries(model_lib)
-        else()
-            message(WARNING "SOC support enabled but SOC libraries not available for model_lib")
-            message(WARNING "SOC_LIBS_GLOBAL: ${SOC_LIBS_GLOBAL}")
-            message(WARNING "SOC_EXTRACT_TARGET_GLOBAL: ${SOC_EXTRACT_TARGET_GLOBAL}")
-        endif()
-    else()
-        message(STATUS "SOC support disabled for model_lib (not x86 platform)")
-    endif()
+    message(STATUS "Building model_lib with built-in SOC wrapper only")
 endif()

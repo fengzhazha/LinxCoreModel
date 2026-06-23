@@ -54,12 +54,12 @@ We provide several models for BlockISA evaluation:
 * **BlockISA Token Model or Fast Model**: Evaluate performance using event-triggerred evalution. This model is fast but not accurate.
 * **BlockISA Cycle Accurate Model**: Evaluate BlockISA binaries using cycle-accurate evaluation. This model is accurate but very slow.
 
-To use P688 Soc all the models, simply build using CMake:
+To build the default models, use CMake:
 ```
 mkdir build
 cd build
 cmake ..
-make -j
+cmake --build . -j12
 ```
 
 To use GENERIC Soc, the **lib64 library of GCC-12** is required.
