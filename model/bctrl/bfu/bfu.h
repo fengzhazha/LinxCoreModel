@@ -172,6 +172,7 @@ private:
     void FlushForEnd(uint32_t pipe_id);
     void FlushForCall(uint32_t pipe_id);
     void FlushForIncond(uint32_t pipe_id);
+    void ReleaseEmptyLocalPipes();
     /* \brief handling pipe stall or move */
     void PipeStall();
     /* \brief stall for delievering instructions */

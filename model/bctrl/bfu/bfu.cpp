@@ -1120,6 +1120,21 @@ void BFU::RunF3() {
 }
 
 void BFU::RunF2() {
+    auto clear_stale_select = [this] {
+        if (!select_info.vld) {
+            return;
+        }
+        if (select_info.pipe_id >= local_fu.size()) {
+            select_info.Reset();
+            return;
+        }
+        auto &local = local_fu[select_info.pipe_id];
+        if (local.pipe[F2].state == NS_CORE::PipeState::INVALID ||
+            !local.ready || !local.pipe[F2].fb[FIR]) {
+            select_info.Reset();
+        }
+    };
+
     // Global fetch
     auto state = pipe[F2].state;
     bool prefetch = true;
@@ -1146,6 +1161,7 @@ void BFU::RunF2() {
     globalL2Reurn = false;
 
     // Local fetch, select oldest FB at current cycle
+    clear_stale_select();
     if (!select_info.vld && !bhc.LocalFetchStall()) {
         for (uint32_t i = 0; i < local_fu.size(); i++) {
             auto &local = local_fu[i];
@@ -2028,6 +2044,28 @@ PtrFB BFU::GetStartFBByFbidHid(seq_t fbid, seq_t hid, uint32_t pipe_id, uint32_t
     return *brq.getFBStartByHid(hid, stid);
 }
 
+void BFU::ReleaseEmptyLocalPipes() {
+    for (uint32_t i = 0; i < local_fu.size(); i++) {
+        auto &local = local_fu[i];
+        if (!local.occupied) {
+            continue;
+        }
+        if (local.pipe[F0].state != NS_CORE::PipeState::INVALID ||
+            local.pipe[F2].state != NS_CORE::PipeState::INVALID ||
+            local.pipe[F3].state != NS_CORE::PipeState::INVALID) {
+            continue;
+        }
+        uint32_t stid = local.occupiedStid;
+        local.FreePipe();
+        if (select_info.vld && select_info.pipe_id == i) {
+            select_info.Reset();
+        }
+        if (stid != -1U) {
+            sp.ResetPipe(false, i, stid);
+        }
+    }
+}
+
 bool BFU::CheckOldest(PtrFB const& fb, bool *global_select, bool *local_select) {
     if (fb->global) {
         for (uint32_t i = 0; i < local_fu.size(); i++) {
@@ -2236,6 +2274,18 @@ void BFU::FetchStall() {
 }
 
 void BFU::LocalFetchStall() {
+    if (select_info.vld) {
+        bool stale_select = select_info.pipe_id >= local_fu.size();
+        if (!stale_select) {
+            auto &selected_local = local_fu[select_info.pipe_id];
+            stale_select = selected_local.pipe[F2].state == NS_CORE::PipeState::INVALID ||
+                           !selected_local.ready || !selected_local.pipe[F2].fb[FIR];
+        }
+        if (stale_select) {
+            select_info.Reset();
+        }
+    }
+
     // Local stall, select the oldest ready local FB to fetch
     bool select_move = false;
     uint32_t move_id = 0;
@@ -2328,6 +2378,7 @@ void BFU::TlbStall() {
         logger.debug("TOP", F1, "%s stalled due to btlb stall\n", "FB1");
         return;
     }
+    ReleaseEmptyLocalPipes();
     uint32_t takenNum = 1;
     for (size_t i = 0; i < pipe[F1].fb.size(); i++) {
         auto &fb = pipe[F1].fb[i];
