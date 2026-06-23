@@ -180,6 +180,17 @@ static bool CalcInstSRL(MInst &inst)
     return true;
 }
 
+static bool CalcInstSRLW(MInst &inst)
+{
+    if (inst.srcs.size() != SRC2_IDX || inst.dsts.size() != DST1_IDX) {
+        return false;
+    }
+    uint32_t srcL = static_cast<uint32_t>(inst.srcs[SRC0_IDX]->data & MASK_BIT32);
+    uint32_t srcR = static_cast<uint32_t>(inst.srcs[SRC1_IDX]->data & MASK_BIT5);
+    uint32_t res = static_cast<uint32_t>(srcL >> srcR);
+    inst.dsts[DST0_IDX]->data = static_cast<uint64_t>(static_cast<int64_t>(static_cast<int32_t>(res)));
+    return true;
+}
 
 template<typename T>
 int64_t DoArithShiftRight(uint64_t data, uint64_t shift)
@@ -263,7 +274,7 @@ Handler Lookup(Opcode op)
         {Opcode::OP_ANDW, &CalcInstAndw},
         {Opcode::OP_ORW, &CalcInstOrw},
         {Opcode::OP_XORW, &CalcInstXorw},
-        {Opcode::OP_SRLW, &CalcInstSRL},
+        {Opcode::OP_SRLW, &CalcInstSRLW},
         {Opcode::OP_SRAW, &CalcInstSRAW},
         {Opcode::OP_SLLW, &CalcInstSLLW},
 
@@ -272,7 +283,7 @@ Handler Lookup(Opcode op)
         {Opcode::OP_ANDIW, &CalcInstAndw},
         {Opcode::OP_ORIW, &CalcInstOrw},
         {Opcode::OP_XORIW, &CalcInstXorw},
-        {Opcode::OP_SRLIW, &CalcInstSRL},
+        {Opcode::OP_SRLIW, &CalcInstSRLW},
         {Opcode::OP_SRAIW, &CalcInstSRAW},
         {Opcode::OP_SLLIW, &CalcInstSLLW},
     };
