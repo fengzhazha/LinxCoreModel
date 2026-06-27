@@ -224,14 +224,7 @@ def setup_compiler_env(args):
     sys_type = detect_system()
     print(f"[compiler] Detected environment: {sys_type}")
 
-    # Respect partial env settings
-    if cc or cxx:
-        if not cc:
-            cc = (shutil.which("clang") or "clang") if sys_type == "macOS" else (find_compiler("gcc") or shutil.which("gcc") or "gcc")
-        if not cxx:
-            cxx = (shutil.which("clang++") or "clang++") if sys_type == "macOS" else (find_compiler("g++") or shutil.which("g++") or "g++")
-        print(f"[compiler] Using env CC={cc}, CXX={cxx}")
-        return cc, cxx
+    # Respect partial env settings\n    if cc or cxx:\n        if cc and not cxx:\n            if "clang" in os.path.basename(cc).lower():\n                cxx = shutil.which("clang++") or "clang++"\n            else:\n                cxx = find_compiler("g++") or shutil.which("g++") or "g++"\n        elif cxx and not cc:\n            if "clang++" in os.path.basename(cxx).lower():\n                cc = shutil.which("clang") or "clang"\n            else:\n                cc = find_compiler("gcc") or shutil.which("gcc") or "gcc"\n        print(f"[compiler] Using env CC={cc}, CXX={cxx}")\n        return cc, cxx
 
     if sys_type == "macOS":
         cc = shutil.which("clang") or "clang"
