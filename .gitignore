@@ -11,7 +11,7 @@
 .DS_store
 
 # Nested build directory
-/build*
+/build/
 /.vscode/*
 /.codemate/*
 

@@ -140,6 +140,7 @@ FloatRoundMode FRM2FloatRoundMode(uint32_t FRM) {
             return float_round_ties_away;
         default:
             assert(0 && "error FloatRoundMode\r\n");
+            return float_round_to_zero;
     }
 }
 static void InitConvertMapFp(std::map<std::pair<OPConvertType, OPConvertType>,

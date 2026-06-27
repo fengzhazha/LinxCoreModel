@@ -663,6 +663,7 @@ const char* CubeCalculate::EleType(DataType dataType)
         default:
             std::cerr << "Unsupported dataType: " << BriefDataType2String(dataType) << std::endl;
             assert(0);
+            return "UNKNOWN";
     }
 }
 
@@ -709,6 +710,7 @@ uint64_t CubeCalculate::EleSize(DataType dataType)
         default:
             std::cerr << "Unsupported dataType: " << BriefDataType2String(dataType) << std::endl;
             assert(0);
+            return 0;
     }
 }
 

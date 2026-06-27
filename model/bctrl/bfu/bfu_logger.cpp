@@ -39,7 +39,7 @@ namespace NS_CORE {
             case BFUStage::F3 : return "F3";
             case BFUStage::F4 : return "F4";
             case BFUStage::NIL : return "XX";
-            default: assert(0);
+            default: assert(0); return "??";
         }
     };
 }

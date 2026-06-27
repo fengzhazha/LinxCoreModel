@@ -66,7 +66,7 @@ public:
     virtual bool ParseBoolean(std::string const& v) final {
         if (v == "false") return false;
         else if (v == "true") return true;
-        else assert(0);
+        else { assert(0); return false; }
     }
 
     virtual void ParseIntVec(std::string const& v, std::vector<uint64_t>& array) final {

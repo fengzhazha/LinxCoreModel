@@ -40,6 +40,31 @@ if(CCACHE_EXECUTABLE)
     endforeach()
 endif()
 
+function(gf_add_compile_definitions)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.12)
+        add_compile_definitions(${ARGN})
+    else()
+        foreach(definition IN LISTS ARGN)
+            add_definitions("-D${definition}")
+        endforeach()
+    endif()
+endfunction()
+
+macro(gf_add_link_options)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+        add_link_options(${ARGN})
+    else()
+        foreach(link_option IN ITEMS ${ARGN})
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${link_option}")
+            set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${link_option}")
+            set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${link_option}")
+        endforeach()
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" PARENT_SCOPE)
+        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}" PARENT_SCOPE)
+        set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS}" PARENT_SCOPE)
+    endif()
+endmacro()
+
 # 平台检测
 function(gf_detect_platform)
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
@@ -52,7 +77,7 @@ function(gf_detect_platform)
 endfunction()
 
 # 全局编译定义
-add_compile_definitions("PACKAGE=blockisa" "PACKAGE_VERSION=0.20")
+gf_add_compile_definitions("PACKAGE=blockisa" "PACKAGE_VERSION=0.20")
 
 
 # 设置全局编译器选项
@@ -79,11 +104,11 @@ function(gf_set_global_compiler_options)
     # 2. 基础链接选项
     # ------------------------------------------------------------------------
     if(NOT DISABLE_DEBUG_SYMBOLS)
-        add_link_options(-g)
+        gf_add_link_options(-g)
     endif()
     # -lm 仅在 Linux/Unix 下需要
     if(UNIX AND NOT APPLE)
-        add_link_options(-lm)
+        gf_add_link_options(-lm)
     endif()
     # ------------------------------------------------------------------------
     # 3. Sanitizer 配置 (根据外部传入的 option 决定)
@@ -96,7 +121,7 @@ function(gf_set_global_compiler_options)
             -fsanitize=address
             -fno-omit-frame-pointer
         )
-        add_link_options(
+        gf_add_link_options(
             -fsanitize=address
             -fno-omit-frame-pointer
         )
@@ -104,7 +129,7 @@ function(gf_set_global_compiler_options)
     if(ENABLE_UBSAN)
         message(STATUS "    [UBSAN] UndefinedBehaviorSanitizer is ENABLED")
         add_compile_options(-fsanitize=undefined)
-        add_link_options(-fsanitize=undefined)
+        gf_add_link_options(-fsanitize=undefined)
     endif()
 
     # 如果同时开了 ASAN 和 UBSAN，GCC/Clang 通常支持同时链接
@@ -121,8 +146,8 @@ function(gf_set_global_compiler_options)
     message(STATUS "    [COVERAGE] Mode       : ${COVERAGE_MODE}")
     message(STATUS "    [COVERAGE] Output Dir : ${COVERAGE_OUTPUT_DIR}")
     add_compile_options(--coverage)
-    add_link_options(--coverage)
-    add_compile_definitions(
+    gf_add_link_options(--coverage)
+    gf_add_compile_definitions(
         GF_ENABLE_COVERAGE=1
         GF_COVERAGE_MODE="${COVERAGE_MODE}"
         GF_COVERAGE_OUTPUT_DIR="${COVERAGE_OUTPUT_DIR}"

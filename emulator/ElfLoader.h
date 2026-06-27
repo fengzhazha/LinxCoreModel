@@ -14,12 +14,12 @@
 #include <iostream>
 #include <stdint.h>
 
-#include "document.h"
-#include "istreamwrapper.h"
+#include "rapidjson/document.h"
+#include "rapidjson/istreamwrapper.h"
 #include "json.hpp"
 #include "Memory.h"
-#include "stringbuffer.h"
-#include "writer.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 
 namespace JCore {
 

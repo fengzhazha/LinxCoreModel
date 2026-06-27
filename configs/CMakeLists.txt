@@ -11,7 +11,7 @@ function(filter_generated_files INPUT_LIST OUTPUT_LIST)
 endfunction()
 
 # configs/CMakeLists.txt
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 # 设置gen_configs.py路径
 set(GEN_CONFIGS_SCRIPT ${CMAKE_SOURCE_DIR}/tools/gen_configs.py)

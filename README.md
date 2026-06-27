@@ -44,9 +44,20 @@ The actual data interaction on the hardware is between the three dedicated cores
 ## Block Model Installation
 
 To install BlockISA model, the following prerequisite are required:
-- **libelf** used for parsing ELF files: `apt-get install libelf-dev`
-- **python3.8** used for parsing configurations and toml library
+- **GCC 8+** or **Clang 10+** for C++17 support (Ubuntu 18.04 default GCC 7.3 is not supported)
+- **libelf** used for parsing ELF files: `apt-get install libelf-dev` (Linux) or `brew install libelf` (macOS)
+- **python3.8+** used for parsing configurations and toml library
 - **toml** used for parsing configurations `pip install toml`
+- **cmake 3.10+** for build system
+- **rapidjson 1.1.0** (included in `third_party/rapidjson/`)
+
+**Ubuntu 18.04 users**: The default GCC 7.3 does not fully support C++17. Please install GCC 8+:
+```bash
+sudo apt-get install gcc-8 g++-8
+export CC=gcc-8
+export CXX=g++-8
+python3 build.py all -j8
+```
 
 We provide several models for BlockISA evaluation:
 
@@ -54,38 +65,84 @@ We provide several models for BlockISA evaluation:
 * **BlockISA Token Model or Fast Model**: Evaluate performance using event-triggerred evalution. This model is fast but not accurate.
 * **BlockISA Cycle Accurate Model**: Evaluate BlockISA binaries using cycle-accurate evaluation. This model is accurate but very slow.
 
-To build the default models, use CMake:
+### Using build.py (Recommended)
+
+The `build.py` script provides a convenient way to build the project across multiple platforms (Ubuntu 18/22/26, macOS).
+
+```bash
+# Configure and build in one step
+python3 build.py all -j8
+
+# Clean build
+python3 build.py all --clean -j8
+
+# Configure only
+python3 build.py configure
+
+# Build only
+python3 build.py build -j8
+
+# Build specific target
+python3 build.py build --target gfrun -j8
+python3 build.py build --target gfsim -j8
+
+# Clean build directory
+python3 build.py clean
 ```
+
+**build.py options:**
+
+| Option | Description |
+|--------|-------------|
+| `-t, --build-type` | CMake build type: Release, Debug, RelWithDebInfo, MinSizeRel (default: Release) |
+| `-O, --opt-level` | Optimization level: O0, O1, O2, O3, Os (default: O2) |
+| `-j, --parallel` | Number of parallel build jobs |
+| `-G, --generator` | CMake generator (e.g. Ninja, 'Unix Makefiles') |
+| `--tests` | Build unit tests |
+| `--generic-soc` | Enable generic SOC V3.1.1 |
+| `--generic-soc-new` | Enable new generic SOC V6.6.4 |
+| `--no-debug` | Disable debug symbols |
+| `--verbose` | Enable verbose build output |
+| `--asan` | Enable AddressSanitizer |
+| `--ubsan` | Enable UndefinedBehaviorSanitizer |
+| `--coverage` | Enable code coverage |
+| `-y, --yes` | Auto-confirm dependency installation (for non-interactive environments) |
+| `--clean` | Clean build dir before configuring |
+
+**Platform-specific behavior:**
+- **Linux (Ubuntu)**: Uses system default GCC
+- **macOS**: Uses Clang; automatically checks for libelf and prompts to install via Homebrew if missing
+- **Non-interactive (CI/Agent)**: Use `-y` flag to auto-install dependencies
+
+### Manual CMake Build
+
+To build the default models manually, use CMake:
+```bash
 mkdir build
 cd build
 cmake ..
-cmake --build . -j12
+cmake --build . -j8
 ```
 
 To use GENERIC Soc, the **lib64 library of GCC-12** is required.
-```
-Firstly, We should  config Make Envirenment as following(applicable to specific servers):
+```bash
+# Configure environment (applicable to specific servers):
 export PATH=/software/public/gcc-12.2.0/bin:$PATH
 export LD_LIBRARY_PATH=/software/public/gcc-12.2.0/lib64:$LD_LIBRARY_PATH
 export CC=/software/public/gcc-12.2.0/bin/gcc
 export CXX=/software/public/gcc-12.2.0/bin/g++
 export CMAKE_C_COMPILER=/software/public/gcc-12.2.0/bin/gcc
 export CMAKE_CXX_COMPILER=/software/public/gcc-12.2.0/bin/g++
-```
-Then Building and Running with GENERIC Soc old V1: (python build.py -c -D)
-```
-mkdir build
-cd build
-cmake ..  -DGENERIC_SOC=ON
-make -j
-```
 
-Then Building and Running with GENERIC Soc New V2: (python build.py -c -E)
-```
-mkdir build
-cd build
-cmake ..  -GENERIC_SOC_NEW=ON
-make -j
+# Build with GENERIC SOC V1
+mkdir build && cd build
+cmake .. -DGENERIC_SOC=ON
+cmake --build . -j8
+
+# Build with GENERIC SOC New V2
+mkdir build && cd build
+cmake .. -DGENERIC_SOC_NEW=ON
+cmake --build . -j8
 ```
 
 ### Other Compilation Options

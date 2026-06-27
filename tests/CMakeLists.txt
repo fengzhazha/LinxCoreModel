@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
 
 # 让 CMake 通过环境变量提示 gtest 的安装前缀
 if(DEFINED ENV{GTEST_ROOT})

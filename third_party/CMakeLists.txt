@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 # 创建一个接口库，代表第三方库
 add_library(third_party INTERFACE)

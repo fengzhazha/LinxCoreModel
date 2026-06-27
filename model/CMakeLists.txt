@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 # 收集所有源文件 - 只处理本目录下的文件
 file(GLOB_RECURSE MODEL_SRC CONFIGURE_DEPENDS *.cpp)
