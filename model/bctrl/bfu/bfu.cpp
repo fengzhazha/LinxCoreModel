@@ -2652,6 +2652,7 @@ uint32_t BFU::GetFreeLocalPipeID() {
         }
     }
     assert(0 && "Can't find free local fetch pipe");
+    return 0;
 }
 
 uint32_t BFU::GetOldestLocalPipeID() {
@@ -2779,6 +2780,7 @@ char BFU::PipeState2Char(PipeState s) {
         return 'S';
     }
     (assert(0));
+    return '?';
 }
 
 void BFU::PrintPipeState() {
@@ -2850,6 +2852,7 @@ uint32_t BFU::GetLocalPipeID(seq_t const& fbid) {
     }
     cerr<<"fbid="<<dec<<fbid<<endl;
     assert(0 && "Can't find occupied local pipe by globlal fbid");
+    return 0;
 }
 
 void BFU::WakeupLocalPipe(PtrFB const& fb) {
@@ -2914,7 +2917,7 @@ void BFU::DumpPipeStatus()
             case BFUStage::F3 : return "F3";
             case BFUStage::F4 : return "F4";
             case BFUStage::NIL : return "XX";
-            default: assert(0);
+            default: assert(0); return "??";
         }
     };
     auto state2Str = [](PipeState state) {

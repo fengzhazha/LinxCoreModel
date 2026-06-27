@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 # 收集源文件 - 只处理本目录下的文件
 file(GLOB_RECURSE EMULATOR_SRC CONFIGURE_DEPENDS *.cpp)

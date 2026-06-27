@@ -339,8 +339,10 @@ void SoftCore::DataFormatCvt(std::vector<uint64_t>& dst, JCore::DataType srcType
             case DataType::INT4:
             case DataType::UINT4:
                 assert(0 && "Not support such type convert yet");
+                return OPConvertType::OPCVT_NOT;
             default:
                 assert(0 && "No corresponding data conversion type");
+                return OPConvertType::OPCVT_NOT;
         }
     };
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 # 保持原有的接口库（用于头文件）
 add_library(common_headers INTERFACE)

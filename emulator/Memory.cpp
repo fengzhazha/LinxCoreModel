@@ -4,7 +4,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "ELF.h"
+#include "ElfLoader.h"
 #include "utils/error.h"
 using namespace std;
 #define MEM_DEBUG 0

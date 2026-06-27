@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 # 收集源文件
 file(GLOB_RECURSE TOOLS_SRC CONFIGURE_DEPENDS *.cpp)

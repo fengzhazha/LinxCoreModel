@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
 project(blockisa-model VERSION 0.20.0 LANGUAGES CXX)
 
 # 设置输出目录
@@ -10,9 +10,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(GlobalSettings)
 
-find_path(RAPIDJSON_INCLUDE_DIR document.h
-    HINTS /opt/homebrew/include /opt/homebrew/opt/rapidjson/include
-    PATH_SUFFIXES rapidjson
+find_path(RAPIDJSON_INCLUDE_DIR rapidjson/document.h
+    HINTS ${CMAKE_CURRENT_SOURCE_DIR}/third_party/rapidjson/include /opt/homebrew/include /opt/homebrew/opt/rapidjson/include
 )
 find_path(LIBELF_INCLUDE_DIR libelf.h
     HINTS /opt/homebrew/include /opt/homebrew/opt/libelf/include
@@ -40,6 +39,12 @@ gf_detect_platform()
 
 # 设置全局编译选项
 gf_set_global_compiler_options()
+
+# GCC 12+ 更严格的警告检测，需要禁用部分警告以兼容多平台
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12)
+    add_compile_options(-Wno-error=unused-variable)
+    add_compile_options(-Wno-error=unused-but-set-variable)
+endif()
 
 set(LINXCOREMODEL_CLANG_COMPAT_OPTIONS
     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-error=c++17-extensions>

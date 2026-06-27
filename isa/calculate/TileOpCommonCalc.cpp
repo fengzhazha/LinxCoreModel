@@ -45,6 +45,7 @@ uint64_t TileOpCommonCalc::FillEle(DataType dataType, PadValue paddingValue)
                 return 0xFF;
             default:
                 assert(0 && "ERROR: The current type of data filling is not supported yet");
+                return 0;
         }
     };
 
@@ -81,6 +82,7 @@ uint64_t TileOpCommonCalc::FillEle(DataType dataType, PadValue paddingValue)
                 return 0;
             default:
                 assert(0 && "ERROR: The current type of data filling is not supported yet");
+                return 0;
         }
     };
 

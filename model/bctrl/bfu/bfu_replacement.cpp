@@ -60,6 +60,7 @@ way_t NMRU::getVictim(set_t set_idx) {
         if (!set[w].used) return w;
     }
     assert(0 && "Error: NMRU cannot get victim.");
+    return 0;
 }
 
 bool NMRU::isValid(set_t set_idx, way_t way_idx) {

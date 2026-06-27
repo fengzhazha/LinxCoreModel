@@ -3,20 +3,20 @@ function(setup_generic_new_soc_libraries)
     
     if(GRAPHFLOW_X86_SUPPORT)
         message(STATUS "x86 support detected, configuring SOC libraries")
-        set(SOC_GENERIC_WORK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/model/generic_soc)
-        set(SOC_GENERIC_LIB_DIR ${SOC_GENERIC_WORK_DIR}/lib_v2)
+        set(SOC_GENERIC_WORK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/model/generic_soc")
+        set(SOC_GENERIC_LIB_DIR "${SOC_GENERIC_WORK_DIR}/lib_v2")
         #set(CMAKE_COMMAND /usr/local/bin/cmake)
         message(STATUS "SOC GENERIC library directory: ${SOC_GENERIC_LIB_DIR}")
         
         # 检查压缩文件是否存在
-        set(NEW_SOC_LIB_ARCHIVE ${SOC_GENERIC_WORK_DIR}/lib_v2.tar.gz)
-        set(NEW_SOC_PARAM_ARCHIVE ${SOC_GENERIC_WORK_DIR}/export_generic_mp_121v2.tar.gz)
-        if(NOT EXISTS ${NEW_SOC_LIB_ARCHIVE})
+        set(NEW_SOC_LIB_ARCHIVE "${SOC_GENERIC_WORK_DIR}/lib_v2.tar.gz")
+        set(NEW_SOC_PARAM_ARCHIVE "${SOC_GENERIC_WORK_DIR}/export_generic_mp_121v2.tar.gz")
+        if(NOT EXISTS "${NEW_SOC_LIB_ARCHIVE}")
             message(FATAL_ERROR "SOC library archive not found: ${NEW_SOC_LIB_ARCHIVE}")
         endif()
         
         # 检查是否已经解压lib文件
-        set(EXTRACT_MARKER ${SOC_GENERIC_WORK_DIR}/.libV2_extracted)    
+        set(EXTRACT_MARKER "${SOC_GENERIC_WORK_DIR}/.libV2_extracted")
         message(STATUS "Judge is EXISTS ${EXTRACT_MARKER}")
         if(EXISTS "${EXTRACT_MARKER}")
             message(STATUS "SOC New ver2 libraries already extracted")
@@ -26,14 +26,14 @@ function(setup_generic_new_soc_libraries)
 
             # 解压 SOC 库
            execute_process(
-                COMMAND ${CMAKE_COMMAND} -E echo ">>> extracting: ${NEW_SOC_LIB_ARCHIVE}"
-                COMMAND ${CMAKE_COMMAND} -E echo ">>> workdir: ${SOC_GENERIC_WORK_DIR}"
-                COMMAND ${CMAKE_COMMAND} -E tar xzf "${NEW_SOC_LIB_ARCHIVE}"
+                COMMAND "${CMAKE_COMMAND}" -E echo ">>> extracting: ${NEW_SOC_LIB_ARCHIVE}"
+                COMMAND "${CMAKE_COMMAND}" -E echo ">>> workdir: ${SOC_GENERIC_WORK_DIR}"
+                COMMAND "${CMAKE_COMMAND}" -E tar xzf "${NEW_SOC_LIB_ARCHIVE}"
                 # 解压 配置param文件
-                COMMAND ${CMAKE_COMMAND} -E tar xzf "${NEW_SOC_PARAM_ARCHIVE}"
-                COMMAND ${CMAKE_COMMAND} -E touch "${EXTRACT_MARKER}"
+                COMMAND "${CMAKE_COMMAND}" -E tar xzf "${NEW_SOC_PARAM_ARCHIVE}"
+                COMMAND "${CMAKE_COMMAND}" -E touch "${EXTRACT_MARKER}"
                 WORKING_DIRECTORY "${SOC_GENERIC_WORK_DIR}"
-                COMMAND ${CMAKE_COMMAND} -E echo ">>> touch marker: ${EXTRACT_MARKER}"
+                COMMAND "${CMAKE_COMMAND}" -E echo ">>> touch marker: ${EXTRACT_MARKER}"
             )
 
             message(STATUS "End extract from ${NEW_SOC_LIB_ARCHIVE} to ${SOC_GENERIC_LIB_DIR}")
@@ -44,25 +44,27 @@ function(setup_generic_new_soc_libraries)
         set(MODEL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/model/generic_soc/export_generic_mp_121v2")
         message(STATUS "Judge soft link file from ${TARGET_DIR}/export_generic_mp_generic to  ${MODEL_DIR}")
         set(cur_target "${CMAKE_CURRENT_SOURCE_DIR}")
-        if(EXISTS "${TARGET_DIR}/export_generic_mp_generic") # AND  IS_SYMLINK "${TARGET_DIR}/export_generic_mp_generic"
-            file(READ_SYMLINK "${TARGET_DIR}/export_generic_mp_generic" cur_target)
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.14)
+            if(EXISTS "${TARGET_DIR}/export_generic_mp_generic") # AND  IS_SYMLINK "${TARGET_DIR}/export_generic_mp_generic"
+                file(READ_SYMLINK "${TARGET_DIR}/export_generic_mp_generic" cur_target)
+            endif()
         endif()
         message(STATUS "Judge soft link file STREQUAL ${MODEL_DIR} to ${cur_target}")
-        if(NOT ${cur_target} STREQUAL ${MODEL_DIR})
+        if(NOT "${cur_target}" STREQUAL "${MODEL_DIR}")
             message(STATUS "Symlink Donot STREQUAL old soft link file target: ${TARGET_DIR}/export_generic_mp_generic -> ${cur_target}")
             message(STATUS "rm -rf ${TARGET_DIR}/export_generic_mp_generic")
-            file(REMOVE_RECURSE ${TARGET_DIR}/export_generic_mp_generic)
-            file(CREATE_LINK ${MODEL_DIR}  ${TARGET_DIR}/export_generic_mp_generic SYMBOLIC)
+            file(REMOVE_RECURSE "${TARGET_DIR}/export_generic_mp_generic")
+            execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${MODEL_DIR}" "${TARGET_DIR}/export_generic_mp_generic")
         else()
             message(STATUS "Symlink STREQUAL old soft link file target: ${TARGET_DIR}/export_generic_mp_generic -> ${cur_target} , donot remove set again.")
         endif()
 
         # 定义提取目标
-        add_custom_target(extract_generic_soc_libs ALL DEPENDS ${EXTRACT_MARKER}
+        add_custom_target(extract_generic_soc_libs ALL DEPENDS "${EXTRACT_MARKER}"
             COMMENT "SOC New ver2 libraries extraction target"
         )
         # 检查 SOC 库目录是否存在
-        if(NOT EXISTS ${SOC_GENERIC_LIB_DIR})
+        if(NOT EXISTS "${SOC_GENERIC_LIB_DIR}")
             message(FATAL_ERROR "SOC library directory does not exist: ${SOC_GENERIC_LIB_DIR}") # WARNING
         endif()
         message(STATUS "Added custom target for extracting New ver2 SOC libraries: extract_generic_soc_libs")
@@ -84,14 +86,14 @@ function(setup_generic_new_soc_libraries)
             if(lib_name STREQUAL "boost_serialization")
                 find_library(${lib_name}_lib 
                     NAMES boost_serialization  
-                    PATHS ${SOC_GENERIC_LIB_DIR} 
+                    PATHS "${SOC_GENERIC_LIB_DIR}"
                     NO_DEFAULT_PATH
                     NO_CMAKE_FIND_ROOT_PATH
                     NO_SYSTEM_ENVIRONMENT_PATH
                 )
             else()
                 find_library(${lib_generic_name}_lib ${lib_generic_name} 
-                    PATHS ${SOC_GENERIC_LIB_DIR}
+                    PATHS "${SOC_GENERIC_LIB_DIR}"
                     NO_DEFAULT_PATH
                     NO_CMAKE_FIND_ROOT_PATH
                     NO_SYSTEM_ENVIRONMENT_PATH
@@ -119,7 +121,11 @@ function(setup_generic_new_soc_libraries)
         add_library(soc_generic_libraries_interface INTERFACE)
 
         # 设置 SOC 库的链接选项
-        target_link_directories( soc_generic_libraries_interface INTERFACE ${SOC_GENERIC_LIB_DIR})
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+            target_link_directories( soc_generic_libraries_interface INTERFACE "${SOC_GENERIC_LIB_DIR}")
+        else()
+            target_link_libraries( soc_generic_libraries_interface INTERFACE "-L${SOC_GENERIC_LIB_DIR}")
+        endif()
         
         # 为每个 SOC 库设置正确的链接选项
         foreach(soc_lib ${NEW_GENERIC_SOC_LIBRARIES})
@@ -147,12 +153,20 @@ function(setup_generic_new_soc_libraries)
         endforeach()
         
         # 设置运行时库搜索路径
-        target_link_options( soc_generic_libraries_interface INTERFACE
-            "-Wl,-rpath,${SOC_GENERIC_LIB_DIR}"
-            "-Wl,--disable-new-dtags"
-            # 让链接器自动解决依赖
-            "-Wl,--allow-shlib-undefined"
-        )
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+            target_link_options( soc_generic_libraries_interface INTERFACE
+                "-Wl,-rpath,${SOC_GENERIC_LIB_DIR}"
+                "-Wl,--disable-new-dtags"
+                # 让链接器自动解决依赖
+                "-Wl,--allow-shlib-undefined"
+            )
+        else()
+            target_link_libraries( soc_generic_libraries_interface INTERFACE
+                "-Wl,-rpath,${SOC_GENERIC_LIB_DIR}"
+                "-Wl,--disable-new-dtags"
+                "-Wl,--allow-shlib-undefined"
+            )
+        endif()
         
         # 添加编译定义
         target_compile_definitions( soc_generic_libraries_interface INTERFACE -DEXT_SOC_INTF)
