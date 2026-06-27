@@ -97,11 +97,7 @@ def check_macos_libelf(auto_yes=False):
     if detect_system() != "macOS":
         return True
 
-    # Check if brew is available
-    if not shutil.which("brew"):
-        print("[ERROR] Homebrew is not installed. Please install Homebrew first:")
-        print("  /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")
-        return False
+    # Check if brew is available\n    brew_path = shutil.which("brew")\n    if not brew_path:\n        for path in ["/opt/homebrew/bin/brew", "/usr/local/bin/brew"]:\n            if os.path.isfile(path) and os.access(path, os.X_OK):\n                brew_path = path\n                os.environ["PATH"] = os.path.dirname(path) + os.pathsep + os.environ.get("PATH", "")\n                break\n\n    if not brew_path:\n        print("[ERROR] Homebrew is not installed. Please install Homebrew first:")\n        print("  /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")\n        return False
 
     # Check if libelf is installed
     result = subprocess.run(
